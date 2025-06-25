@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content">
+    <h3 class="text-center my-3">Board List</h3>
+    <!--검색-->
+    <!--/* th:selected=true / false */-->
+
+    <form class="d-flex container-md mb-3 p-0 position-relative" role="search" action="/board/list" id="searchForm">
+        <input type="hidden" name="pageNo" th:value="1">
+        <div class="col-2 px-1">
+            <select class="form-select" name="type" aria-label="searchType" id="type">
+                <option th:selected="${ph.type == null ? true : false}">-</option>
+                <option th:value="t" th:selected="${ph.type == 't' ? true : false}">Title</option>
+                <option th:value="w" th:selected="${ph.type == 'w' ? true : false}">Writer</option>
+                <option th:value="c" th:selected="${ph.type == 'c' ? true : false}">Content</option>
+                <option th:value="tc" th:selected="${ph.type == 'tc' ? true : false}">Title&Content</option>
+                <option th:value="wc" th:selected="${ph.type == 'wc' ? true : false}">Writer&Content</option>
+                <option th:value="tw" th:selected="${ph.type == 'tw' ? true : false}">Title&Writer</option>
+                <option th:value="twc" th:selected="${ph.type == 'twc' ? true : false}">All</option>
+            </select>
+        </div>
+        <div class="col-7 d-flex ps-2 pe-4">
+            <input type="text" id="searchKeyword" name="keyword" aria-label="searchKeyword" class="form-control">
+            <button type="button" id="searchBtn" class="btn btn-primary ms-3">Search</button>
+        </div>
+        <div class="position-absolute end-0 top-50 translate-middle-y pe-2">
+            <a th:href="@{/board/list}" th:if="${ph.type != null && ph.type.length() > 0}" class="me-3">
+                <button type="button" class="btn btn-outline-secondary">Cancel Search</button>
+            </a>
+            Total [[${ph.totalCount}]] Boards
+        </div>
+    </form>
+
+    <div class="container-md w-75">
+        <div class="row border rounded bg-body-tertiary mb-3">
+            <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end">#</div>
+            <div class="col-2 d-flex justify-content-center align-items-center border-end">Writer</div>
+            <div class="col-6 d-flex justify-content-center align-items-center border-end">Title</div>
+            <div class="col-3 d-flex justify-content-center align-items-center">RegDate</div>
+        </div>
+        <div th:each="bvo:${ph.list}" class="row mb-3">
+            <div class="col-1 d-flex justify-content-center align-items-center">[[${bvo.bno}]]</div>
+            <div class="col-2 d-flex justify-content-center align-items-center">[[${bvo.writer}]]</div>
+            <div class="col-6 d-flex align-items-center ps-3">
+                <a th:href="@{/board/detail(bno=${bvo.bno})}">[[${bvo.title}]]</a>
+            </div>
+            <div class="col-3 d-flex justify-content-center align-items-center">[[${bvo.regTimeOrDate}]]</div>
+        </div>
+    </div>
+    <!--페이지네이션-->
+    <!--/* ${} : JSP EL 방식 */-->
+    <!--/* 타임리프 : th: / 인라인 [[${}]] */-->
+    <!--/* disabled를 class에 추가하여 prev/next를 제어 */-->
+    <!--/* th:classappend : 동적으로 클래스를 추가 */-->
+
+    <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${ph.hasPrev eq false ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/board/list(pageNo=${ph.startPage - 1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <th:block th:each="i:${#numbers.sequence(ph.startPage, ph.endPage)}">
+                <li class="page-item" th:classappend="${ph.pageNo eq i ? 'active' : ''}">
+                    <a th:href="@{/board/list(pageNo=${i}, type=${ph.type}, keyword=${ph.keyword})}"
+                       class="page-link">[[${i}]]</a>
+                </li>
+            </th:block>
+            <li class="page-item" th:classappend="${ph.hasNext eq false ? 'disabled' : ''}">
+                <a class="page-link" th:href="@{/board/list(pageNo=${ph.endPage + 1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script>
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            if (document.getElementById('type').value != null && document.getElementById('searchKeyword').value != '')
+                document.getElementById('searchForm').submit();
+        });
+    </script>
+</div>

@@ -1,0 +1,9 @@
+-- 2025-06-23
+DB : bootdb2
+user : springuser
+password : mysql
+
+- root
+create database bootdb2;
+grant all privileges on bootdb2.* to 'springuser'@'localhost';
+flush privileges;

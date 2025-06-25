@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<div layout:fragment="content" class="container-md">
+  <h3 class="text-center">Board Register Page</h3>
+  <form action="/board/register" method="post">
+    <div class="mb-3">
+      <label for="t" class="form-label">title</label>
+      <input type="text" class="form-control" id="t" placeholder="Title" name="title" required>
+    </div>
+    <div class="mb-3">
+      <label for="w" class="form-label">writer</label>
+      <input type="text" class="form-control" id="w" placeholder="test@test.com" name="writer">
+    </div>
+    <div class="mb-3">
+      <label for="c" class="form-label">content</label>
+      <textarea class="form-control" id="c" cols="30" rows="10" name="content" required></textarea>
+    </div>
+    <!--/*
+    file 추가
+    <div class="mb-3 d-flex justify-content-end">
+      <input type="file"
+             class="invisible"
+             name="files"
+             id="file"
+             multiple>
+      <button type="button" class="btn btn-outline-primary" id="trigger">File Upload</button>
+    </div>
+    파일 출력 라인
+    <div class="mb-3" id="fileZone">
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item">-</li>
+      </ul>
+    </div>
+    */-->
+    <button type="submit" class="btn btn-primary" id="regBtn">Register</button>
+  </form>
+  <!--/*
+  <script th:src="@{/js/boardRegister.js}"></script>
+  */-->
+</div>

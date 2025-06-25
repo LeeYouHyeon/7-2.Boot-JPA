@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.next.nz/thymeleaf/layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot JPA</title>
+    <link rel="stylesheet" th:href="@{/dist/css/bootstrap.min.css}">
+    <script th:src="@{/dist/js/bootstrap.bundle.min.js}"></script>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div layout:fragment="content"></div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

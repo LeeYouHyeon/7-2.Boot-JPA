@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<div layout:fragment="content" th:with="bvo=${boardDTO}">
+  <form action="/board/update" method="post" class="mt-5" enctype="multipart/form-data">
+    <input type="hidden" th:value="${bvo.bno}" id="bno" name="bno">
+    <div class="container-md w-75 border rounded">
+      <div class="row border-bottom">
+        <div class="col-1 d-flex py-3 justify-content-center align-items-center border-end bg-body-tertiary">제목</div>
+        <div class="col-11 d-flex justify-content-center align-items-center" id="titleArea">[[${bvo.title}]]</div>
+        <div class="col-11 d-none" id="titleInputArea">
+          <input type="text" name="title" aria-label="title" class="form-control px-2 my-2" th:value="${bvo.title}" required>
+        </div>
+      </div>
+      <div class="row mb-3 border-bottom">
+        <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary py-3">작성자</div>
+        <div class="col-2 d-flex justify-content-center align-items-center border-end">[[${bvo.writer}]]</div>
+        <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary">작성일</div>
+        <div class="col-2 d-flex justify-content-evenly align-items-center border-end pe-3">[[${bvo.regTimeOrDate}]]</div>
+        <div class="col-2 d-flex justify-content-center align-items-center border-end bg-body-tertiary">최근 수정일</div>
+        <div class="col-2 d-flex justify-content-evenly align-items-center border-end pe-3">[[${bvo.modTimeOrDate}]]</div>
+        <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary">조회수</div>
+        <div class="col-1 d-flex justify-content-center align-items-center">-</div>
+      </div>
+      <div class="pb-3">
+        <div id="contentArea">[[${bvo.content}]]</div>
+        <div class="d-none" id="contentInputArea">
+          <textarea class="form-control"
+                    id="contentInput" name="content" aria-label="content"
+                    cols="30" rows="10" required>[[${bvo.content}]]</textarea>
+        </div>
+      </div>
+    </div>
+<!--/* 등록된 파일 출력
+    <div class="container-md w-75 mb-3 border border rounded-bottom" th:with="files=${bdto.fileList}">
+      <div class="row">
+        <div class="col d-flex justify-content-center align-items-center bg-body-tertiary py-3 border-bottom">첨부파일</div>
+      </div>
+      <div class="row bg-body-tertiary">
+        <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end"></div>
+        <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end">번호</div>
+        <div class="col-6 d-flex justify-content-center align-items-center py-3 border-end">파일명</div>
+        <div class="col-2 d-flex justify-content-center align-items-center py-3 border-end">미리보기</div>
+        <div class="col-2 d-flex justify-content-center align-items-center py-3">크기</div>
+      </div>
+      <div class="row border-top" th:if="${files == null || files.size() == 0}">
+        <div class="col d-flex justify-content-center align-items-center py-3">-</div>
+      </div>
+      <div class="row border-top" th:each="file, status: ${files}">
+        <div class="col-1 d-flex justify-content-center align-items-center">
+          <button type="button" class="btn btn-outline-danger invisible fileRemoveBtn" th:data-uuid="${file.uuid}">X</button>
+        </div>
+        <div class="col-1 d-flex justify-content-center align-items-center py-3" th:text="${status.count}"></div>
+        <div class="col-6 d-flex">
+          <a th:href="@{|/upload/${file.saveDir}/${file.uuid}_${file.fileName}|}"
+             th:download="${file.fileName}" class="d-flex align-items-center ps-2">
+            [[${file.fileName}]]
+          </a>
+        </div>
+        <div class="col-2 d-flex justify-content-center align-items-center">
+          <div th:if="${file.fileType == 1}">
+            <img th:src="@{|/upload/${file.saveDir}/${file.uuid}_th_${file.fileName}|}" alt="${file.fileName}">
+          </div>
+          <div th:unless="${file.fileType == 1}">-</div>
+        </div>
+        <div class="col-2 d-flex justify-content-center align-items-center">[[${file.fileSize}]] Bytes</div>
+      </div>
+    </div>
+    */-->
+    <div class="d-flex justify-content-end container-md w-75 mb-3" id="defaultButtons">
+      <button type="button" class="btn btn-outline-secondary" id="modBtn">수정</button>
+      <button type="button" class="btn btn-outline-danger" id="delBtn">삭제</button>
+    </div>
+    <div class="d-none justify-content-end container-md w-75 mb-3" id="buttonsInModifying">
+      <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
+      <button type="submit" class="btn btn-warning" id="updateBtn">확인</button>
+    </div>
+
+<!--/*
+    <div class="container-md w-50 invisible" id="fileUploadArea">
+      파일 추가
+      <div class="mb-3 d-flex justify-content-end">
+        <input type="file"
+               class="invisible"
+               name="files"
+               id="file"
+               multiple>
+        <button type="button" class="btn btn-outline-primary" id="trigger">File Upload</button>
+      </div>
+      파일 출력
+      <div class="mb-3" id="fileZone">
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">-</li>
+        </ul>
+      </div>
+    </div>
+  </form>
+  */-->
+
+  <div class="container-md w-75 border rounded" id="commentArea">
+    <div class="row py-3 mb-3 justify-content-center align-items-center bg-body-tertiary">댓글</div>
+    <div class="container-md mb-3 p-3" id="commentRegisterArea">
+      <div class="row my-3">
+        <div class="col-3 d-flex justify-content-center">
+          <label for="cmtWriterInput" class="w-25 d-flex justify-content-center align-items-center">작성자</label>
+          <div class="w-75 d-flex justify-content-center align-items-center">
+            <input type="text" id="cmtWriterInput" class="form-control">
+          </div>
+        </div>
+        <div class="col-7">
+          <input type="text"
+                 class="form-control h-100"
+                 id="cmtContent"
+                 placeholder="댓글 입력">
+        </div>
+        <div class="col-2 d-flex justify-content-center">
+          <button type="button" class="btn btn-primary" id="cmtRegisterBtn">등록</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-md mb-3 p-3 border rounded" id="commentListArea"></div>
+  </div>
+
+  <script>
+    const bno = document.getElementById('bno').value;
+  </script>
+    <script th:src="@{/js/boardComment.js}"></script>
+  <script th:src="@{/js/boardDetail.js}"></script>
+  <script th:src="@{/js/boardRegister.js}"></script>
+  </form>
+</div>
