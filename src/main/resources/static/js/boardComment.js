@@ -12,6 +12,13 @@ document.addEventListener('click', e => {
     return;
   }
 
+  // 파일 삭제
+  if (classList.contains('fileRemoveBtn')) {
+    deleteFile(e.target);
+    return;
+  }
+
+  // 댓글
   const cmt = e.target.closest('.comment');
   if (cmt == null) return;
 
@@ -40,7 +47,6 @@ function loadComment(page = 1) {
   fetch(`/comment/list/${bno}/${page}`)
   .then(resp => resp.json())
   .then(json => {
-    console.log(json);
     const {hasNext, hasPrev, list, startPage, endPage, totalCount} = json;
     // commentListArea
     if (totalCount == 0) {
@@ -49,9 +55,9 @@ function loadComment(page = 1) {
     }
     let init = '<div class="row mb-3">';
       init += '<div class="col-2 d-flex justify-content-center align-items-center">작성자</div>';
-      init += '<div class="col-6 d-flex justify-content-center align-items-center">내용</div>';
+      init += '<div class="col-5 d-flex justify-content-center align-items-center">내용</div>';
       init += '<div class="col-2 d-flex justify-content-center align-items-center">작성일</div>';
-      init += `<div class="col-2 d-flex justify-content-center align-items-center">총 댓글 수 : ${totalCount}</div>`;
+      init += `<div class="col-3 d-flex justify-content-center align-items-center">총 댓글 수 : ${totalCount}</div>`;
       init += '</div><hr>';
       commentListArea.innerHTML = init;
       for (const {cno, writer, content, regTimeOrDate} of list) {
@@ -60,15 +66,15 @@ function loadComment(page = 1) {
         cmt += `
           <div class="col-2 d-flex justify-content-center align-items-center">${writer}</div>`;
         cmt += `
-          <div class="col-6 d-flex align-items-center cmtContent">${content}</div>`;
+          <div class="col-5 d-flex align-items-center cmtContent">${content}</div>`;
         cmt += `
-          <div class="col-6 d-none align-items-center cmtContentInput">
+          <div class="col-5 d-none align-items-center cmtContentInput">
             <input type="text" class="form-control" value=${content} />
           </div>`;
         cmt += `
           <div class="col-2 d-flex justify-content-center align-items-center">${regTimeOrDate}</div>`;
         cmt += `
-          <div class="col-2 d-flex justify-content-end">`;
+          <div class="col-3 d-flex justify-content-center">`;
         cmt += `
           <button type="button" class="btn btn-warning me-3 cmtModify">수정</button>`;
         cmt += `

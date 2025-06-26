@@ -26,20 +26,20 @@ public class PagingHandler<T> {
 
     /**
      * Creates a paging handler with default group size = 10.
-     * */
+     */
     public PagingHandler(Page<T> page, String type, String keyword) {
         this(page, 10, type, keyword);
     }
 
     /**
      * Creates a paging handler with custom group size.
-     * */
+     */
     public PagingHandler(Page<T> page, int groupSize, String type, String keyword) {
         this.pageNo = page.getNumber() + 1;
         this.totalPage = page.getTotalPages();
         this.totalCount = page.getTotalElements();
 
-        this.startPage = page.getNumber()/groupSize*groupSize  + 1;
+        this.startPage = page.getNumber() / groupSize * groupSize + 1;
         this.endPage = this.startPage + groupSize - 1;
         if (this.endPage > this.totalPage) this.endPage = this.totalPage;
 

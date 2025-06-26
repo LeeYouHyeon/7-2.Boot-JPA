@@ -53,7 +53,7 @@ public class BoardCustomRepositoryImpl implements BoardCustomRepository {
                 };
             }
         }
-        
+
         // 쿼리 작성 및 페이징 적용
         // where에 null이 들어가면 조건이 없는 것처럼 작동함
         List<Board> result = queryFactory

@@ -1,8 +1,12 @@
 package com.example.bootJPA.service;
 
 import com.example.bootJPA.dto.BoardDTO;
+import com.example.bootJPA.dto.BoardFileDTO;
+import com.example.bootJPA.dto.FileDTO;
 import com.example.bootJPA.entity.Board;
+import com.example.bootJPA.entity.File;
 import com.example.bootJPA.repository.BoardRepository;
+import com.example.bootJPA.repository.FileRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,19 +16,27 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Slf4j
 @Service
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
+    private final FileRepository fileRepository;
 
+    @Transactional
     @Override
-    public Long insert(BoardDTO boardDTO) {
+    public Long insert(BoardFileDTO boardFileDTO) {
         // 저장 객체는 Board
         // save() : 저장
         // entity 객체를 파라미터로 전송
-        return boardRepository.save(convertDtoToEntity(boardDTO)).getBno();
+        long bno = boardRepository.save(convertDtoToEntity(boardFileDTO.getBoardDTO())).getBno();
+        fileSave(boardFileDTO.getFileList(), bno);
+
+        return bno;
     }
 
 //    @Override
@@ -52,17 +64,25 @@ public class BoardServiceImpl implements BoardService {
                 .map(this::convertEntityToDto);
     }
 
+    @Transactional
     @Override
-    public BoardDTO getOne(Long bno) {
+    public BoardFileDTO detail(Long bno) {
         /*
         Optional<T> : NullPointerException을 막는 용도
         (Optional 객체).isEmpty() : null 이면 true / 아니면 false
         (Optional 객체).isPresent() : isEmpty()와 반대
         (Optional 객체).get() : 언박싱
          */
-        return boardRepository.findById(bno)
+        BoardDTO boardDTO = boardRepository.findById(bno)
                 .map(this::convertEntityToDto)
                 .orElse(null);
+        if (boardDTO == null) return null;
+
+        return new BoardFileDTO(boardDTO,
+                fileRepository.findByBno(boardDTO.getBno())
+                        .stream()
+                        .map(this::convertEntityToDto)
+                        .toList());
     }
 
     @Override
@@ -99,12 +119,34 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public void update(BoardDTO boardDTO) {
+    public void update(BoardFileDTO boardFileDTO) {
         // 2. Dirty Checking
+        BoardDTO boardDTO = boardFileDTO.getBoardDTO();
+
         Board entity = boardRepository
                 .findById(boardDTO.getBno())
                 .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시글"));
         entity.setTitle(boardDTO.getTitle());
         entity.setContent(boardDTO.getContent());
+
+        fileSave(boardFileDTO.getFileList(), boardDTO.getBno());
+    }
+
+    @Transactional
+    @Override
+    public void fileRemove(String uuid) throws EntityNotFoundException {
+        File file = fileRepository.findById(uuid)
+                .orElseThrow(() -> new EntityNotFoundException("없는 파일"));
+
+        fileRepository.delete(file);
+    }
+
+    private void fileSave(List<FileDTO> fileDTOList, long bno) {
+        if (fileDTOList == null || bno == 0L) return;
+
+        for (FileDTO fileDTO : fileDTOList) {
+            fileDTO.setBno(bno);
+            fileRepository.save(convertDtoToEntity(fileDTO));
+        }
     }
 }
