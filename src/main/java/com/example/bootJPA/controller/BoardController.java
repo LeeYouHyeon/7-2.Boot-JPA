@@ -4,11 +4,15 @@ import com.example.bootJPA.dto.BoardDTO;
 import com.example.bootJPA.dto.BoardFileDTO;
 import com.example.bootJPA.dto.FileDTO;
 import com.example.bootJPA.handler.FileHandler;
+import com.example.bootJPA.handler.InnerImageHandler;
 import com.example.bootJPA.handler.PagingHandler;
 import com.example.bootJPA.service.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -104,6 +108,30 @@ public class BoardController {
             boardService.fileRemove(uuid);
             return "1";
         } catch (EntityNotFoundException e) {
+            return "0";
+        }
+    }
+
+    @GetMapping("/toast")
+    public void toast() {}
+
+    @PostMapping("/toast")
+    @ResponseBody
+    public String toast(@RequestBody BoardDTO boardDTO) {
+        try {
+            InnerImageHandler handler = new InnerImageHandler();
+            Document doc = Jsoup.parseBodyFragment(boardDTO.getContent());
+            for (Element element : doc.select("img")) {
+                log.info(">>>> element >> {}", element.toString());
+                if (!element.hasAttr("src")) continue;
+
+                String src = element.attr("src");
+                if (src.startsWith("data:image")) handler.saveBase64(element);
+            }
+            log.info(">>>> parse result >> {}", doc.body().html());
+
+            return "1";
+        } catch (Exception e) {
             return "0";
         }
     }
