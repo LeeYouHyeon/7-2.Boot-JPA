@@ -18,6 +18,8 @@ public class BoardDTO {
     private String writer;
     private String content;
     private LocalDateTime regDate, modDate;
+    private long readCount;
+    private int cmtCount;
 
     public String getRegTimeOrDate() {
         return timeOrDate(regDate);
@@ -26,5 +28,9 @@ public class BoardDTO {
     public String getModTimeOrDate() {
         if (regDate.equals(modDate)) return "-";
         return timeOrDate(modDate);
+    }
+
+    public String getCmtCountPrint() {
+        return "[" + cmtCount + "]";
     }
 }

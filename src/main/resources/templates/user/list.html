@@ -9,6 +9,7 @@
   <!--/* 검색 */-->
   <form class="d-flex container-md mb-3 p-0 position-relative" role="search" action="/user/list" id="searchForm">
     <input type="hidden" name="pageNo" th:value="1">
+    <input type="hidden" th:name="${_csrf.parameterName }" th:value="${_csrf.token }">
     <div class="col-2 px-1">
       <select class="form-select" name="type" aria-label="searchType" id="type">
         <option th:selected="${ph.type == null ? true : false}">-</option>

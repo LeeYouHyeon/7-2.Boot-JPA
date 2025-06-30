@@ -4,7 +4,7 @@ console.log("boardDetail.js in");
 const delBtn = document.getElementById('delBtn');
 delBtn.addEventListener('click', () => {
   if (confirm('글을 삭제하시겠습니까?')) {
-    fetch('/board/delete?bno=' + bno)
+    fetch('/board/delete/' + bno)
     .then(resp => resp.text())
     .then(result => {
       if (result == '0') alert('삭제에 실패했습니다.');

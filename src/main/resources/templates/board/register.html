@@ -1,49 +1,37 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:layout="http://www.ultraq.next.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
+<div class="container-md my-3 w-75" layout:fragment="content">
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.min.js"></script>
 
-<div layout:fragment="content" class="container-md w-50">
-  <h3 class="text-center mt-4">Board Register Page</h3>
-  <form action="/board/register" method="post" enctype="multipart/form-data">
-    <div class="mb-3">
-      <label for="t" class="form-label">title</label>
-      <input type="text" class="form-control" id="t" placeholder="Title" name="title" required>
+  <div id="titleArea">
+    <input type="text" id="titleInput" class="form-control mb-2" placeholder="제목을 입력해주세요" required>
+  </div>
+  <!--/* 토스트 에디터 */-->
+  <div id="editor"></div>
+
+  <!--/* 파일 업로드 */-->
+  <div class="position-relative row my-3">
+    <div class="col-10"></div>
+    <div class="col-2 d-flex justify-content-end align-items-center">
+      <button type="button" class="btn btn-primary" id="sendBtn">등록</button>
     </div>
-    <div class="mb-3">
-      <label for="w" class="form-label">writer</label>
-      <input type="text" class="form-control" id="w" placeholder="test@test.com" name="writer">
-    </div>
-    <div class="mb-3">
-      <label for="c" class="form-label">content</label>
-      <textarea class="form-control" id="c" cols="30" rows="10" name="content" required></textarea>
-    </div>
-    <!--/* file 추가 */-->
-    <div class="mb-3 d-flex justify-content-between">
-      <div class="d-flex align-items-center">
-        <button type="button" class="btn btn-outline-primary me-2" id="trigger">File Upload</button>
-        <span class="me-3 rounded p-2" id="totalFileSize"></span>
+
+    <div class="border rounded my-3 position-absolute start-50 translate-middle-x">
+      <input type="file" class="d-none" id="fileInput" multiple>
+      <div class="row border-bottom bg-body-tertiary">
+        <div class="col-7 border-end d-flex justify-content-center align-items-center">파일명</div>
+        <div class="col-3 border-end d-flex justify-content-center align-items-center">용량</div>
+        <div class="col-2 py-3 text-center" id="totalSizeArea"></div>
       </div>
-      <input type="file"
-             class="d-none"
-             name="files"
-             id="file"
-             multiple>
-      <div class="d-flex align-items-center">
-        ※ 파일은 개당 5MiB까지, 총 20MiB까지 업로드할 수 있습니다.
+      <div id="filePrintArea"></div>
+      <div class="row bg-body-tertiary d-flex justify-content-center align-items-center py-3">
+        파일은 개당 5MB, 총 20MB까지 업로드 가능하며, 실행 파일 종류(.exe, .dll, .jar, ...)는 업로드할 수 없습니다.
       </div>
     </div>
-    <!--/* 파일 출력 라인 */-->
-    <div class="mb-3" id="fileZone">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">-</li>
-      </ul>
-    </div>
-    <button type="submit" class="btn btn-primary" id="regBtn">Register</button>
-  </form>
-  <script>
-    const uploadedTotalSize = 0;
-  </script>
+  </div>
   <script th:src="@{/js/boardRegister.js}"></script>
 </div>

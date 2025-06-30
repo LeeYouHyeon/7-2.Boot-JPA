@@ -1,7 +1,9 @@
 package com.example.bootJPA.service;
 
 import com.example.bootJPA.dto.CommentDTO;
+import com.example.bootJPA.entity.Board;
 import com.example.bootJPA.entity.Comment;
+import com.example.bootJPA.repository.BoardRepository;
 import com.example.bootJPA.repository.CommentRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class CommentServiceImpl implements CommentService {
+    private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     @Override
     public long post(CommentDTO commentDTO) {
-        return commentRepository
-                .save(convertDtoToEntity(commentDTO))
-                .getCno();
+        try {
+            Board board = boardRepository.findById(commentDTO.getBno()).orElseThrow(Exception::new);
+            board.setCmtCount(board.getCmtCount() + 1);
+            return commentRepository
+                    .save(convertDtoToEntity(commentDTO))
+                    .getCno();
+        } catch (Exception ignored) {
+            return 0;
+        }
     }
 
     @Override
@@ -30,9 +40,18 @@ public class CommentServiceImpl implements CommentService {
                 .map(this::convertEntityToDto);
     }
 
+    @Transactional
     @Override
     public void delete(Long cno) {
-        commentRepository.deleteById(cno);
+        Comment comment = commentRepository.findById(cno).orElse(null);
+        if (comment == null) return;
+
+        commentRepository.delete(comment);
+        try {
+            Board board = boardRepository.findById(comment.getBno())
+                    .orElseThrow(Exception::new);
+            board.setCmtCount(board.getCmtCount() - 1);
+        } catch (Exception ignored) {}
     }
 
     @Transactional

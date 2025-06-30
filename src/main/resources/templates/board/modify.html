@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.next.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<div class="container-md my-3" layout:fragment="content" th:with="bvo=${boardFileDTO.boardDTO}">
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script src="https://uicdn.toast.com/editor/latest/i18n/ko-kr.min.js"></script>
+
+  <div id="titleArea">
+    <input type="text" id="titleInput" class="form-control mb-2"
+           th:value="${bvo.title}"
+           placeholder="제목을 입력해주세요" required>
+  </div>
+  <!--/* 토스트 에디터 */-->
+  <div id="editor"></div>
+
+  <!--/* 파일 업로드 */-->
+  <div class="container-md w-75 border rounded my-3">
+    <input type="file" class="d-none" id="fileInput" multiple>
+    <div class="row border-bottom bg-body-tertiary">
+      <div class="col-7 border-end d-flex justify-content-center align-items-center">파일명</div>
+      <div class="col-3 border-end d-flex justify-content-center align-items-center">용량</div>
+      <div class="col-2 py-3 text-center" id="totalSizeArea"></div>
+    </div>
+    <div id="fileDTOArea">
+    </div>
+    <div id="filePrintArea"></div>
+    <div class="row bg-body-tertiary d-flex justify-content-center align-items-center py-3">
+      파일은 개당 5MB, 총 20MB까지 업로드 가능하며, 실행 파일 종류(.exe, .dll, .jar, ...)는 업로드할 수 없습니다.
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end">
+    <button type="button" class="btn btn-secondary" id="cancelBtn">취소</button>
+    <button type="button" class="btn btn-warning" id="sendBtn">수정</button>
+  </div>
+
+  <script th:inline="javascript">
+    const bno = [[${bvo.bno}]];
+    const fileDTOList = [[${boardFileDTO.fileList}]];
+    const contentBefore = [[${bvo.content}]];
+    console.log(fileDTOList);
+  </script>
+  <script th:src="@{/js/boardModify.js}"></script>
+</div>

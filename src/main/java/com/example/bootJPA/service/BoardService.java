@@ -26,6 +26,8 @@ public interface BoardService {
                 .title(boardDTO.getTitle())
                 .writer(boardDTO.getWriter())
                 .content(boardDTO.getContent())
+                .readCount(boardDTO.getReadCount())
+                .cmtCount(boardDTO.getCmtCount())
                 .build();
     }
 
@@ -40,6 +42,8 @@ public interface BoardService {
                 .content(board.getContent())
                 .regDate(board.getRegDate())
                 .modDate(board.getModDate())
+                .readCount(board.getReadCount())
+                .cmtCount(board.getCmtCount())
                 .build();
     }
 
@@ -69,7 +73,7 @@ public interface BoardService {
 
     Page<BoardDTO> getList(int pageNo, int pageSize, String type, String keyword);
 
-    BoardFileDTO detail(Long bno);
+    BoardFileDTO detail(Long bno, boolean isReal);
 
     void delete(Long bno);
 

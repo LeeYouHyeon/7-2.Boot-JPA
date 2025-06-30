@@ -3,16 +3,20 @@ package com.example.bootJPA.controller;
 import com.example.bootJPA.dto.UserDTO;
 import com.example.bootJPA.handler.PagingHandler;
 import com.example.bootJPA.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.awt.print.Pageable;
 import java.security.Principal;
 
 @RequestMapping("/user/*")
@@ -60,9 +64,12 @@ public class UserController {
     }
 
     @GetMapping("/remove")
-    public String remove(Principal principal) {
+    public String remove(Principal principal,
+                         HttpServletRequest request,
+                         HttpServletResponse response) {
         String email = userService.remove(principal.getName());
-        return "redirect:/user/logout";
+        logout(request, response);
+        return "redirect:/";
     }
 
     @GetMapping("/list")
@@ -72,5 +79,14 @@ public class UserController {
                      @RequestParam(name = "keyword", required = false) String keyword) {
         Page<UserDTO> list = userService.getList(pageNo, 10, type, keyword);
         model.addAttribute("ph", new PagingHandler<>(list, type, keyword));
+    }
+
+    private void logout(HttpServletRequest request,
+                        HttpServletResponse response){
+        Authentication auth = SecurityContextHolder
+                .getContext().getAuthentication();
+        if(auth != null){
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
     }
 }

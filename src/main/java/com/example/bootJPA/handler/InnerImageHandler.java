@@ -19,18 +19,27 @@ public class InnerImageHandler {
                 , alt = image.attr("alt") // 고양이.jpg
                 , extension = alt.substring(alt.lastIndexOf(".") + 1);
         String base64 = src.substring(src.indexOf(",") + 1);
+        log.info(">>> step 1");
 
         byte[] imageBytes = Base64.getDecoder().decode(base64);
 
         String fileDir = LocalDate.now().toString().replace("-", "/");
         File saveDir = new File(filePath + fileDir);
         if (!saveDir.exists() && !saveDir.mkdirs()) throw new Exception();
+        log.info(">>> step 2");
 
         String fileNameWithUuid = UUID.randomUUID() + "_" + alt;
         File outputFile = new File(saveDir, fileNameWithUuid);
+        log.info(">>> step 3");
 
         BufferedImage saved = ImageIO.read(new java.io.ByteArrayInputStream(imageBytes));
+        log.info(">>> step 4");
+        log.info(">>> saved {}", saved);
+        log.info(">>> extension {}", extension);
+        log.info(">>> outputFile {}", outputFile);
         ImageIO.write(saved, extension, outputFile);
+        log.info(">>> step 5");
+
 
         image.attr("src", "/upload/" + fileDir + "/" + fileNameWithUuid);
     }

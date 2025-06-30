@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -66,18 +65,19 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public BoardFileDTO detail(Long bno) {
+    public BoardFileDTO detail(Long bno, boolean isReal) {
         /*
         Optional<T> : NullPointerException을 막는 용도
         (Optional 객체).isEmpty() : null 이면 true / 아니면 false
         (Optional 객체).isPresent() : isEmpty()와 반대
         (Optional 객체).get() : 언박싱
          */
-        BoardDTO boardDTO = boardRepository.findById(bno)
-                .map(this::convertEntityToDto)
-                .orElse(null);
-        if (boardDTO == null) return null;
+        Board board = boardRepository.findById(bno).orElse(null);
+        if (board == null) return null;
 
+        if (isReal) board.setReadCount(board.getReadCount() + 1);
+
+        BoardDTO boardDTO = this.convertEntityToDto(board);
         return new BoardFileDTO(boardDTO,
                 fileRepository.findByBno(boardDTO.getBno())
                         .stream()

@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/layout}">
 
 <div layout:fragment="content">
@@ -33,22 +34,27 @@
             </a>
             Total [[${ph.totalCount}]] Boards
         </div>
+        <input type="hidden" th:name="${_csrf.parameterName }" th:value="${_csrf.token }">
     </form>
 
     <div class="container-md w-75">
         <div class="row border rounded bg-body-tertiary mb-3">
-            <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end">#</div>
-            <div class="col-2 d-flex justify-content-center align-items-center border-end">Writer</div>
-            <div class="col-6 d-flex justify-content-center align-items-center border-end">Title</div>
-            <div class="col-3 d-flex justify-content-center align-items-center">RegDate</div>
+            <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end">번호</div>
+            <div class="col-2 d-flex justify-content-center align-items-center border-end">작성자</div>
+            <div class="col-6 d-flex justify-content-center align-items-center border-end">제목</div>
+            <div class="col-2 d-flex justify-content-center align-items-center border-end">작성일</div>
+            <div class="col-1 d-flex justify-content-center align-items-center">조회수</div>
         </div>
         <div th:each="bvo:${ph.list}" class="row mb-3">
             <div class="col-1 d-flex justify-content-center align-items-center">[[${bvo.bno}]]</div>
-            <div class="col-2 d-flex justify-content-center align-items-center">[[${bvo.writer}]]</div>
+            <div class="col-2 d-flex justify-content-center align-items-center">[[${bvo.writer}]]
+            </div>
             <div class="col-6 d-flex align-items-center ps-3">
                 <a th:href="@{/board/detail(bno=${bvo.bno})}">[[${bvo.title}]]</a>
+                <span class="text-danger ms-1" th:if="${bvo.cmtCount > 0}">[[${bvo.cmtCountPrint}]]</span>
             </div>
-            <div class="col-3 d-flex justify-content-center align-items-center">[[${bvo.regTimeOrDate}]]</div>
+            <div class="col-2 d-flex justify-content-center align-items-center">[[${bvo.regTimeOrDate}]]</div>
+            <div class="col-1 d-flex justify-content-center align-items-center">[[${bvo.readCount}]]</div>
         </div>
     </div>
     <!--페이지네이션-->
@@ -57,26 +63,38 @@
     <!--/* disabled를 class에 추가하여 prev/next를 제어 */-->
     <!--/* th:classappend : 동적으로 클래스를 추가 */-->
 
-    <nav aria-label="Page navigation example" class="d-flex justify-content-center">
-        <ul class="pagination">
-            <li class="page-item" th:classappend="${ph.hasPrev eq false ? 'disabled' : ''}">
-                <a class="page-link" th:href="@{/board/list(pageNo=${ph.startPage - 1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
+    <div class="container-md">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8 d-flex justify-content-center align-items-center">
+                <nav aria-label="Page navigation example" class="d-flex justify-content-center">
+                    <ul class="pagination">
+                        <li class="page-item" th:classappend="${ph.hasPrev eq false ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/board/list(pageNo=${ph.startPage - 1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <th:block th:each="i:${#numbers.sequence(ph.startPage, ph.endPage)}">
+                            <li class="page-item" th:classappend="${ph.pageNo eq i ? 'active' : ''}">
+                                <a th:href="@{/board/list(pageNo=${i}, type=${ph.type}, keyword=${ph.keyword})}"
+                                   class="page-link">[[${i}]]</a>
+                            </li>
+                        </th:block>
+                        <li class="page-item" th:classappend="${ph.hasNext eq false ? 'disabled' : ''}">
+                            <a class="page-link" th:href="@{/board/list(pageNo=${ph.endPage + 1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="col-2 d-flex justify-content-end align-items-center">
+                <a sec:authorize="${isAuthenticated()}" th:href="@{/board/register}">
+                    <button type="button" class="btn btn-primary">글쓰기</button>
                 </a>
-            </li>
-            <th:block th:each="i:${#numbers.sequence(ph.startPage, ph.endPage)}">
-                <li class="page-item" th:classappend="${ph.pageNo eq i ? 'active' : ''}">
-                    <a th:href="@{/board/list(pageNo=${i}, type=${ph.type}, keyword=${ph.keyword})}"
-                       class="page-link">[[${i}]]</a>
-                </li>
-            </th:block>
-            <li class="page-item" th:classappend="${ph.hasNext eq false ? 'disabled' : ''}">
-                <a class="page-link" th:href="@{/board/list(pageNo=${ph.endPage + 1}, type=${ph.type}, keyword=${ph.keyword})}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+            </div>
+        </div>
+    </div>
 
     <script>
         document.getElementById('searchBtn').addEventListener('click', () => {

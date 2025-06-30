@@ -29,26 +29,58 @@ import java.util.List;
 public class BoardController {
     private final BoardService boardService;
 
-    @GetMapping("/register")
-    public void register() {
+    // 에디터 내부의 이미지 처리
+    private String parseContent(String content) throws Exception {
+        // 에디터 내부의 이미지 처리
+        InnerImageHandler handler = new InnerImageHandler();
+        Document doc = Jsoup.parseBodyFragment(content);
+        doc.outputSettings().prettyPrint(false);
+
+        for (Element element : doc.select("img")) {
+            log.info(">>>> element >> {}", element.toString());
+            if (!element.hasAttr("src")) continue;
+
+            element.addClass("mw-100");
+            String src = element.attr("src");
+            if (src.startsWith("data:image")) handler.saveBase64(element);
+        }
+        return doc.body().html();
     }
 
-    @PostMapping("/register")
-    public String register(BoardDTO boardDTO,
-                           @RequestParam(name = "files", required = false)
-                           MultipartFile[] files) {
-        List<FileDTO> fileList = null;
-        if (files != null && files[0].getSize() > 0) {
-            // 파일 핸들러 작업
-            FileHandler fileHandler = new FileHandler();
-            fileList = fileHandler.uploadFiles(files);
-        }
+    @GetMapping("/register")
+    public void register() {}
 
-        // MyBatis : insert, update, delete => return 1 row (성공한 row의 갯수)
-        // JPA : insert, update, delete => return ID
-        Long bno = boardService.insert(new BoardFileDTO(boardDTO, fileList));
-        log.info(">>>> insert id >> {}", bno);
-        return "redirect:/board/detail?bno=" + bno;
+    @PostMapping("/register")
+    @ResponseBody
+    public String register(@RequestParam("title") String title,
+                           @RequestParam("writer") String writer,
+                           @RequestParam("content") String content,
+                           @RequestParam(name = "files[]", required = false)
+                           MultipartFile[] files) {
+        log.info(">>>> board register in");
+        try {
+            String parsed = parseContent(content);
+            log.info(">>> HTML parse successful");
+
+            // 첨부파일 처리
+            List<FileDTO> fileList = null;
+            if (files != null && files[0].getSize() > 0) {
+                // 파일 핸들러 작업
+                FileHandler fileHandler = new FileHandler();
+                fileList = fileHandler.uploadFiles(files);
+            }
+            log.info(">>>> files handling successful");
+
+            Long bno = boardService.insert(new BoardFileDTO(BoardDTO.builder()
+                    .title(title)
+                    .writer(writer)
+                    .content(parsed)
+                    .build(), fileList));
+            log.info(">>>> insert id >> {}", bno);
+            return String.valueOf(bno);
+        } catch (Exception e) {
+            return "0";
+        }
     }
 
     // Paging이 없는 일반 리스트
@@ -69,35 +101,56 @@ public class BoardController {
         model.addAttribute("ph", new PagingHandler<>(list, type, keyword));
     }
 
+    @GetMapping("/modify")
+    public void modify(Model model, @RequestParam("bno") Long bno) {
+        model.addAttribute("boardFileDTO", boardService.detail(bno, false));
+    }
+
     @GetMapping("/detail")
-    public void detail(Model model, @RequestParam("bno") Long bno) {
-        model.addAttribute("boardFileDTO", boardService.detail(bno));
+    public void detail(Model model,
+                       @RequestParam("bno") Long bno,
+                       @RequestParam(name = "isReal", defaultValue = "true") boolean isReal) {
+        log.info(">>>> isReal >> {}", isReal);
+        model.addAttribute("boardFileDTO", boardService.detail(bno, isReal));
     }
 
     @ResponseBody
-    @GetMapping("/delete")
-    public String delete(@RequestParam("bno") Long bno) {
+    @GetMapping("/delete/{bno}")
+    public String delete(@PathVariable("bno") Long bno) {
         log.info(">>>> delete bno >> {}", bno);
         boardService.delete(bno);
         return "1";
     }
 
+    @ResponseBody
     @PostMapping("/update")
-    public String update(BoardDTO boardDTO,
-                         @RequestParam(name = "files", required = false)
-                         MultipartFile[] files,
+    public String update(@RequestParam("bno") Long bno,
+                         @RequestParam("title") String title,
+                         @RequestParam("content") String content,
+                         @RequestParam(name = "files[]", required = false) MultipartFile[] files,
                          RedirectAttributes redirectAttributes) {
+        log.info(">>>> update in");
         try {
+            BoardDTO boardDTO = BoardDTO.builder()
+                    .bno(bno)
+                    .title(title)
+                    .content(parseContent(content))
+                    .build();
+            log.info(">>> DTO created");
+
             List<FileDTO> fileList = null;
             if (files != null && files[0].getSize() > 0)
                 // 파일 핸들러 작업
                 fileList = new FileHandler().uploadFiles(files);
+            log.info(">>> file handled");
+
+            boardService.update(new BoardFileDTO(boardDTO, fileList));
 
             redirectAttributes.addAttribute("bno", boardDTO.getBno());
-            boardService.update(new BoardFileDTO(boardDTO, fileList));
+            redirectAttributes.addAttribute("isReal", false);
             return "redirect:/board/detail";
-        } catch (EntityNotFoundException e) {
-            return "redirect:/board/list";
+        } catch (Exception e) {
+            return "0";
         }
     }
 
@@ -112,27 +165,4 @@ public class BoardController {
         }
     }
 
-    @GetMapping("/toast")
-    public void toast() {}
-
-    @PostMapping("/toast")
-    @ResponseBody
-    public String toast(@RequestBody BoardDTO boardDTO) {
-        try {
-            InnerImageHandler handler = new InnerImageHandler();
-            Document doc = Jsoup.parseBodyFragment(boardDTO.getContent());
-            for (Element element : doc.select("img")) {
-                log.info(">>>> element >> {}", element.toString());
-                if (!element.hasAttr("src")) continue;
-
-                String src = element.attr("src");
-                if (src.startsWith("data:image")) handler.saveBase64(element);
-            }
-            log.info(">>>> parse result >> {}", doc.body().html());
-
-            return "1";
-        } catch (Exception e) {
-            return "0";
-        }
-    }
 }

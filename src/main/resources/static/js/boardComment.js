@@ -1,7 +1,16 @@
 console.log("boardComment.js in")
 
 let currentPage;
-const [commentListArea, cmtWriterInput, cmtContent, cmtRegisterBtn] = ['commentListArea', 'cmtWriterInput', 'cmtContent', 'cmtRegisterBtn'].map(e => document.getElementById(e));
+const [commentListArea, cmtContent, cmtRegisterBtn] = ['commentListArea', 'cmtContent', 'cmtRegisterBtn'].map(e => document.getElementById(e));
+
+function show(input) {
+  if (Array.isArray(input)) input.forEach(e => {show(e);});
+  else input.classList.remove('d-none');
+}
+function hide(input) {
+  if (Array.isArray(input)) input.forEach(e => {hide(e)});
+  else input.classList.add('d-none');
+}
 
 // Main Controller
 loadComment();
@@ -120,10 +129,6 @@ function loadComment(page = 1) {
 
 // 2. Post new comment
 cmtRegisterBtn.addEventListener('click', () => {
-  if (cmtWriterInput.value == '') {
-    cmtWriterInput.focus();
-    return;
-  }
   if (cmtContent.value == '') {
     cmtContent.focus();
     return;
@@ -132,18 +137,18 @@ cmtRegisterBtn.addEventListener('click', () => {
   fetch('/comment/post', {
     method: 'post',
     headers: {
-      'content-type': 'application/json; charset=utf-8'
+      'content-type': 'application/json; charset=utf-8',
+      [csrfHeader]: csrfToken
     },
     body: JSON.stringify({
       'bno': bno,
-      writer: cmtWriterInput.value,
+      writer: email,
       content: cmtContent.value
     })
   }).then(resp => resp.text())
   .then(result => {
     if (result == '0') alert('댓글 등록에 실패했습니다.');
     else {
-      cmtWriterInput.value = '';
       cmtContent.value = '';
       loadComment();
     }
@@ -164,7 +169,10 @@ function removeComment(cno) {
   if (!confirm('댓글을 삭제하시겠습니까?')) return;
 
   fetch('/comment/delete/' + cno, {
-    method: 'delete'
+    method: 'delete',
+    headers: {
+      [csrfHeader]: csrfToken
+    }
   }).then(resp => resp.text())
   .then(result => {
     if (result == '0') alert('삭제에 실패했습니다.');
@@ -186,7 +194,8 @@ function updateComment(parsed) {
   fetch('/comment/update', {
     method: 'put',
     headers: {
-      'content-type': 'application/json; charset=utf-8'
+      'content-type': 'application/json; charset=utf-8',
+      [csrfHeader]: csrfToken
     },
     body: JSON.stringify({
       'cno': parsed.cno,

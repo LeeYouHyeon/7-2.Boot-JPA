@@ -11,11 +11,6 @@ const editor = new Editor({
   previewStyle: 'vertical',
   hooks: {
     addImageBlobHook(blob, callback) {  // 이미지 업로드 로직 커스텀
-      if (blob.size > 1024*300) {
-        alert('그림이 너무 큽니다.');
-        return;
-      }
-      const reader = new FileReader();
       reader.onloadend = () => {
         callback(reader.result, blob.name);
       };
@@ -128,14 +123,14 @@ document.addEventListener('click', e => {
 
 sendBtn.addEventListener('click', () => {
   const formData = new FormData();
-  if (allFiles.items.length > 0)
+  if (allFiles.items.length > 0) 
     for (const file of allFiles.files) formData.append('files[]', file);
   formData.append('title', titleInput.value);
   formData.append('writer', email);
   formData.append('content', editor.getHTML());
   console.log(formData);
 
-  fetch('/board/register', {
+  fetch('/board/toast', {
     method: 'post',
     body: formData,
     headers: {

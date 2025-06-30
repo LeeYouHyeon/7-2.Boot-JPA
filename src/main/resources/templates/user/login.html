@@ -9,6 +9,7 @@
     <h3 class="text-center">Login</h3>
   </div>
   <form action="/user/login" method="post" class="mb-3 container-md w-25">
+    <input type="hidden" th:name="${_csrf.parameterName }" th:value="${_csrf.token }">
     <div class="row mb-3">
       <div class="col-3 d-flex justify-content-center align-items-center bg-body-tertiary border rounded">
         <label for="email">Email</label>

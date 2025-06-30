@@ -35,4 +35,10 @@ public class Board extends TimeBase {
 
     @Column(length = 2000, nullable = false)
     private String content;
+
+    @Column(name="read_count")
+    private long readCount;
+
+    @Column(name="cmt_count")
+    private int cmtCount;
 }
