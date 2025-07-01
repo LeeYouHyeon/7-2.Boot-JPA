@@ -79,7 +79,7 @@ public class BoardController {
             log.info(">>>> insert id >> {}", bno);
             return String.valueOf(bno);
         } catch (Exception e) {
-            return "0";
+            return e.getMessage();
         }
     }
 

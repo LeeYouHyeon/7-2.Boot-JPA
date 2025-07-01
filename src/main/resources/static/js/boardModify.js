@@ -204,6 +204,7 @@ sendBtn.addEventListener('click', () => {
   }).then(resp => resp.text())
   .then(result => {
     if (result == '0') alert('글 수정에 실패했습니다.');
-    else location.href = `/board/detail?bno=${bno}&isReal=false`;
+    else if (result == '1') location.href = `/board/detail?bno=${bno}&isReal=false`;
+    else alert(result);
   })
 });

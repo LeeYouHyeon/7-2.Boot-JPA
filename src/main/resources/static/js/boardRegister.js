@@ -145,6 +145,7 @@ sendBtn.addEventListener('click', () => {
   .then(result => {
     console.log(result);
     if (result == '0') alert('글 등록에 실패했습니다. 다시 시도해주세요.');
-    else location.href = '/board/detail?bno=' + result;
+    else if (!isNaN(Number(result))) location.href = '/board/detail?bno=' + result;
+    else alert(result);
   })
 });
