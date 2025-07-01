@@ -18,8 +18,19 @@ public class UserDTO {
     private String nickName;
     private LocalDateTime lastLogin, regDate, modDate;
     private List<AuthUserDTO> authList;
+    private String profile;
 
     public void encodePassword(PasswordEncoder passwordEncoder) {
         setPwd(passwordEncoder.encode(getPwd()));
+    }
+
+    public String[] getAuthStrings() {
+        String[] answer = new String[authList.size()];
+        int idx = 0;
+        for (AuthUserDTO auth : authList) {
+            answer[idx] = auth.getAuth();
+            idx++;
+        }
+        return answer;
     }
 }

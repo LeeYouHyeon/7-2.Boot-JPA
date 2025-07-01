@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Slf4j
 public class InnerImageHandler {
-    private final String filePath = "D:\\web_0226_lyh\\_myProject\\_java\\_fileUpload\\";
+    private final String filePath = "D:\\web_0226_lyh\\_myProject\\_java\\_fileUpload\\innerImage\\";
 
     public void saveBase64(Element image) throws Exception {
         try {
@@ -24,7 +24,7 @@ public class InnerImageHandler {
 
             byte[] imageBytes = Base64.getDecoder().decode(base64);
 
-            String fileDir = LocalDate.now().toString().replace("-", "/");
+            String fileDir = LocalDate.now().toString().replace("-", File.separator);
             File saveDir = new File(filePath + fileDir);
             if (!saveDir.exists() && !saveDir.mkdirs()) throw new Exception("서버 오류입니다. 관리자에게 문의하세요.");
 
@@ -39,7 +39,7 @@ public class InnerImageHandler {
             log.info(">>> outputFile {}", outputFile);
             ImageIO.write(saved, extension, outputFile);
 
-            image.attr("src", "/upload/" + fileDir + "/" + fileNameWithUuid);
+            image.attr("src", "/upload/innerImage/" + fileDir.replace(File.separator, "/") + "/" + fileNameWithUuid);
         } catch (IOException e) {
             throw new Exception("이미지를 업로드하는 도중 오류가 발생했습니다. 관리자에게 문의하세요.");
         }

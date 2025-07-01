@@ -130,10 +130,14 @@ sendBtn.addEventListener('click', () => {
   const formData = new FormData();
   if (allFiles.items.length > 0)
     for (const file of allFiles.files) formData.append('files[]', file);
-  formData.append('title', titleInput.value);
-  formData.append('writer', email);
-  formData.append('content', editor.getHTML());
-  console.log(formData);
+
+  formData.append("bdto", new Blob([JSON.stringify({
+    title: titleInput.value,
+    writer: email,
+    content: editor.getHTML()
+  })], {
+    type: "application/json"
+  }));
 
   fetch('/board/register', {
     method: 'post',

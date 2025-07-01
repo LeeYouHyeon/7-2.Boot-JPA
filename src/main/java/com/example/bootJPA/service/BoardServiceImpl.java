@@ -33,7 +33,12 @@ public class BoardServiceImpl implements BoardService {
         // save() : 저장
         // entity 객체를 파라미터로 전송
         long bno = boardRepository.save(convertDtoToEntity(boardFileDTO.getBoardDTO())).getBno();
-        fileSave(boardFileDTO.getFileList(), bno);
+
+        List<FileDTO> files = boardFileDTO.getFileList();
+        if (files != null) for (FileDTO fileDTO : files) {
+            fileDTO.setBno(bno);
+            fileRepository.save(convertDtoToEntity(fileDTO));
+        }
 
         return bno;
     }
@@ -120,16 +125,26 @@ public class BoardServiceImpl implements BoardService {
     @Transactional
     @Override
     public void update(BoardFileDTO boardFileDTO) {
+        log.info(">>>> board service update in");
         // 2. Dirty Checking
         BoardDTO boardDTO = boardFileDTO.getBoardDTO();
 
         Board entity = boardRepository
                 .findById(boardDTO.getBno())
-                .orElseThrow(() -> new EntityNotFoundException("존재하지 않는 게시글"));
+                .orElse(null);
+        if (entity == null) return;
+
+        log.info(">> entity loaded");
         entity.setTitle(boardDTO.getTitle());
         entity.setContent(boardDTO.getContent());
+        log.info(">> dto set ");
 
-        fileSave(boardFileDTO.getFileList(), boardDTO.getBno());
+        List<FileDTO> files = boardFileDTO.getFileList();
+        if (files != null) for (FileDTO fileDTO : files) {
+            fileDTO.setBno(boardDTO.getBno());
+            fileRepository.save(convertDtoToEntity(fileDTO));
+        }
+        log.info(">> file saved");
     }
 
     @Transactional
@@ -139,14 +154,5 @@ public class BoardServiceImpl implements BoardService {
                 .orElseThrow(() -> new EntityNotFoundException("없는 파일"));
 
         fileRepository.delete(file);
-    }
-
-    private void fileSave(List<FileDTO> fileDTOList, long bno) {
-        if (fileDTOList == null || bno == 0L) return;
-
-        for (FileDTO fileDTO : fileDTOList) {
-            fileDTO.setBno(bno);
-            fileRepository.save(convertDtoToEntity(fileDTO));
-        }
     }
 }

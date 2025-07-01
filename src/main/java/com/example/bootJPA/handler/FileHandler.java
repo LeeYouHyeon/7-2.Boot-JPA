@@ -20,6 +20,24 @@ public class FileHandler {
     // new File에서 부모로 사용되기 때문에 끝에 구분자가 필요없음
     private final String UP_DIR = "D:\\web_0226_lyh\\_myProject\\_java\\_fileUpload";
 
+    public String uploadProfile(MultipartFile file, String email) throws Exception {
+        log.info(">>> profile upload start");
+
+        File folder = new File(UP_DIR, "_profile");
+        if (!folder.exists()) folder.mkdirs();
+        log.info(">>> folder created");
+
+        if (file.getOriginalFilename() == null) throw new Exception("프로필 사진의 이름을 찾을 수 없습니다.");
+        String[] split = file.getOriginalFilename().split("\\.");
+        String extension = split[split.length - 1];
+        String name = email + "_profile." + extension;
+        log.info(">>> file name >> {}", name);
+
+        File storeFile = new File(folder, name);
+        file.transferTo(storeFile);
+        return name;
+    }
+
     public List<FileDTO> uploadFiles(MultipartFile[] files) {
         List<FileDTO> fileList = new ArrayList<>();
         // 날짜 형태로 폴더를 구성

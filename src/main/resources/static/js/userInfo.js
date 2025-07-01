@@ -1,21 +1,49 @@
-const [modifyBtnArea, updateBtnArea, resignBtn, cancelBtn, modifyBtn, nickNameLabel, nickName] =
-['modifyBtnArea', 'updateBtnArea', 'resignBtn', 'cancelBtn', 'modifyBtn', 'nickNameLabel', 'nickName'].map(e => document.getElementById(e));
-document.addEventListener('click', e => {
-switch (e.target.id) {
-  case 'modifyBtn':
-    modifyBtnArea.classList.add('d-none');
-    updateBtnArea.classList.remove('d-none');
-    nickName.classList.remove('d-none');
-    nickNameLabel.classList.add('d-none');
-    break;
-  case 'resignBtn':
-    if (confirm('정말 탈퇴하시겠습니까?')) location.href = '/user/remove';
-    break;
-  case 'cancelBtn':
-    modifyBtnArea.classList.remove('d-none');
-    updateBtnArea.classList.add('d-none');
-    nickName.classList.add('d-none');
-    nickNameLabel.classList.remove('d-none');
-    break;
+const [modalTrigger, modalTitle, resignBtn, changePwdBtn, modalInput, modalCloseBtn, modalEnterBtn] = ['modalTrigger', 'modalTitle', 'resignBtn', 'changePwdBtn', 'modalInput', 'modalCloseBtn', 'modalEnterBtn'].map(e => document.getElementById(e));
+
+let mode = undefined;
+
+// 모달 불러오기
+function loadModal(message) {
+  modalTitle.innerText = message;
+  modalTrigger.click();
 }
+
+// 모달 닫기
+function closeModal() {
+  modalCloseBtn.click();
+  modalInput.value = '';
+}
+
+changePwdBtn.addEventListener('click', () => {
+  mode = "change";
+  loadModal("현재 사용중인 비밀번호를 입력해주세요.");
+});
+
+resignBtn.addEventListener('click', () => {
+  if (!confirm("정말로 탈퇴하시겠습니까?")) return;
+
+  mode = "remove";
+  loadModal("비밀번호를 입력해주세요.");
+});
+
+modalEnterBtn.addEventListener('click', () => {
+  const getPwd = modalInput.value;
+  modalCloseBtn.click();
+
+  fetch('/user/match', {
+    method: 'post',
+    body: JSON.stringify({
+      email: email,
+      pwd: getPwd
+    }), headers: {
+      [csrfHeader]: csrfToken,
+      'Content-Type': 'application/json; charset=utf-8'
+    }}).then(resp => resp.text())
+    .then(result => {
+      if (result == '0') alert('비밀번호가 맞지 않습니다.');
+      else {
+        if (mode == 'change') location.href = '/user/changePwd';
+        else location.href = '/user/remove';
+      }
+    });
 });

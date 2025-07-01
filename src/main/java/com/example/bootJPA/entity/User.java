@@ -26,4 +26,6 @@ public class User extends TimeBase {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    private String profile;
 }

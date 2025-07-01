@@ -6,7 +6,6 @@ import com.example.bootJPA.entity.AuthUser;
 import com.example.bootJPA.entity.User;
 import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface UserService {
@@ -40,6 +39,7 @@ public interface UserService {
                 .regDate(user.getRegDate())
                 .modDate(user.getModDate())
                 .authList(convertEntityToDto(authUserList))
+                .profile(user.getProfile())
                 .build();
     }
 
@@ -49,6 +49,7 @@ public interface UserService {
                 .pwd(userDTO.getPwd())
                 .nickName(userDTO.getNickName())
                 .lastLogin(userDTO.getLastLogin())
+                .profile(userDTO.getProfile())
                 .build();
     }
 
@@ -70,4 +71,8 @@ public interface UserService {
     String remove(String name);
 
     Page<UserDTO> getList(int pageNo, int i, String type, String keyword);
+
+    String available(String email);
+
+    String match(UserDTO userDTO);
 }

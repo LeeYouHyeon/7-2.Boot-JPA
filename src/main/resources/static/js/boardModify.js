@@ -191,9 +191,14 @@ sendBtn.addEventListener('click', () => {
   const formData = new FormData();
   if (uploadFiles.items.length > 0)
     for (const file of uploadFiles.files) formData.append('files[]', file);
-  formData.append('bno', bno);
-  formData.append('title', titleInput.value);
-  formData.append('content', editor.getHTML());
+  formData.append("bdto", new Blob([JSON.stringify({
+    bno: bno,
+    title: titleInput.value,
+    writer: email,
+    content: editor.getHTML()
+  })], {
+    type: "application/json"
+  }));
 
   fetch('/board/update', {
     method: 'post',
@@ -204,7 +209,6 @@ sendBtn.addEventListener('click', () => {
   }).then(resp => resp.text())
   .then(result => {
     if (result == '0') alert('글 수정에 실패했습니다.');
-    else if (result == '1') location.href = `/board/detail?bno=${bno}&isReal=false`;
-    else alert(result);
+    else location.href = `/board/detail?bno=${bno}&isReal=false`;
   })
 });

@@ -30,6 +30,8 @@ public class QUser extends EntityPathBase<User> {
 
     public final StringPath nickName = createString("nickName");
 
+    public final StringPath profile = createString("profile");
+
     public final StringPath pwd = createString("pwd");
 
     //inherited

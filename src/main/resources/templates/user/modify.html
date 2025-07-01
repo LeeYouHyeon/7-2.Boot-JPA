@@ -13,6 +13,12 @@
       <div class="d-flex flex-column align-items-center w-25">
         <img src="" alt="미리보기" style="width=100px; height=100px;" id="profilePreview" class="my-3">
       </div>
+      <script th:inline="javascript">
+        const profileImageArea = document.getElementById('profileImageArea');
+        let profile = [[${user.profile}]];
+
+        profileImageArea.src = profile == null ? [[@{/image/noProfile.png}]] : [[@{|/upload/_profile/${user.profile}|}]];
+      </script>
       <button type="button" class="btn btn-secondary mb-2" id="profileTrigger">프로필 사진 등록</button>
       <span class="p-1 w-75" style="font-size: 12px;">프로필 사진의 크기는 가로세로 각각 100픽셀입니다.</span>
       <input type="file" class="d-none" id="profileInput" accept="image/*">

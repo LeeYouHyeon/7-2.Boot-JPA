@@ -1,8 +1,6 @@
 package com.example.bootJPA.service;
 
-import com.example.bootJPA.dto.AuthUserDTO;
 import com.example.bootJPA.dto.UserDTO;
-import com.example.bootJPA.entity.AuthUser;
 import com.example.bootJPA.entity.User;
 import com.example.bootJPA.repository.AuthRepository;
 import com.example.bootJPA.repository.UserRepository;
@@ -17,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -81,5 +78,18 @@ public class UserServiceImpl implements UserService {
         Pageable pageable = PageRequest.of(pageNo - 1, 10, Sort.by("regDate"));
         return userRepository.searchUser(type, keyword, pageable)
                 .map(user -> convertEntityToDto(user, authRepository.findByEmail(user.getEmail())));
+    }
+
+    @Override
+    public String available(String email) {
+        Optional<User> user = userRepository.findById(email);
+        return user.isEmpty() ? "1" : "0";
+    }
+
+    @Override
+    public String match(UserDTO userDTO) {
+        Optional<User> user = userRepository.findById(userDTO.getEmail());
+        return user.filter(value -> value.getPwd().equals(userDTO.getPwd()))
+                .map(value -> "1").orElse("0");
     }
 }

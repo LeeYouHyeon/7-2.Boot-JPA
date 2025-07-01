@@ -3,6 +3,7 @@ package com.example.bootJPA.controller;
 import com.example.bootJPA.dto.BoardDTO;
 import com.example.bootJPA.dto.BoardFileDTO;
 import com.example.bootJPA.dto.FileDTO;
+import com.example.bootJPA.entity.Board;
 import com.example.bootJPA.handler.FileHandler;
 import com.example.bootJPA.handler.InnerImageHandler;
 import com.example.bootJPA.handler.PagingHandler;
@@ -31,7 +32,6 @@ public class BoardController {
 
     // 에디터 내부의 이미지 처리
     private String parseContent(String content) throws Exception {
-        // 에디터 내부의 이미지 처리
         InnerImageHandler handler = new InnerImageHandler();
         Document doc = Jsoup.parseBodyFragment(content);
         doc.outputSettings().prettyPrint(false);
@@ -52,14 +52,12 @@ public class BoardController {
 
     @PostMapping("/register")
     @ResponseBody
-    public String register(@RequestParam("title") String title,
-                           @RequestParam("writer") String writer,
-                           @RequestParam("content") String content,
-                           @RequestParam(name = "files[]", required = false)
+    public String register(@RequestPart("bdto") BoardDTO boardDTO,
+                           @RequestPart(name = "files[]", required = false)
                            MultipartFile[] files) {
         log.info(">>>> board register in");
         try {
-            String parsed = parseContent(content);
+            boardDTO.setContent(parseContent(boardDTO.getContent()));
             log.info(">>> HTML parse successful");
 
             // 첨부파일 처리
@@ -71,11 +69,7 @@ public class BoardController {
             }
             log.info(">>>> files handling successful");
 
-            Long bno = boardService.insert(new BoardFileDTO(BoardDTO.builder()
-                    .title(title)
-                    .writer(writer)
-                    .content(parsed)
-                    .build(), fileList));
+            Long bno = boardService.insert(new BoardFileDTO(boardDTO, fileList));
             log.info(">>>> insert id >> {}", bno);
             return String.valueOf(bno);
         } catch (Exception e) {
@@ -124,19 +118,13 @@ public class BoardController {
 
     @ResponseBody
     @PostMapping("/update")
-    public String update(@RequestParam("bno") Long bno,
-                         @RequestParam("title") String title,
-                         @RequestParam("content") String content,
-                         @RequestParam(name = "files[]", required = false) MultipartFile[] files,
+    public String update(@RequestPart("bdto") BoardDTO boardDTO,
+                         @RequestPart(name = "files[]", required = false) MultipartFile[] files,
                          RedirectAttributes redirectAttributes) {
         log.info(">>>> update in");
         try {
-            BoardDTO boardDTO = BoardDTO.builder()
-                    .bno(bno)
-                    .title(title)
-                    .content(parseContent(content))
-                    .build();
-            log.info(">>> DTO created");
+            boardDTO.setContent(parseContent(boardDTO.getContent()));
+            log.info(">>> content parsed");
 
             List<FileDTO> fileList = null;
             if (files != null && files[0].getSize() > 0)
@@ -148,7 +136,7 @@ public class BoardController {
 
             redirectAttributes.addAttribute("bno", boardDTO.getBno());
             redirectAttributes.addAttribute("isReal", false);
-            return "redirect:/board/detail";
+            return "1";
         } catch (Exception e) {
             return "0";
         }
