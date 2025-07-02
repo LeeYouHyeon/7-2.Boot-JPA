@@ -4,16 +4,9 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
-<div layout:fragment="content" th:with="user=${userDTO}">
-  <script th:inline="javascript">
-    const email = [[${user.email}]];
-  </script>
-
-  <!-- Button trigger modal -->
-  <button type="button" class="btn btn-primary d-none" data-bs-toggle="modal" data-bs-target="#staticBackdrop" id="modalTrigger"></button>
-
+<div layout:fragment="content" th:with="user=${#authentication.principal.userDTO}">
   <!--/* 모달 */-->
-  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal fade" id="staticBackdrop" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -36,14 +29,8 @@
     <!--/* 프로필 사진 */-->
     <div class="d-flex flex-column justify-content-around align-items-center col-4">
       <div class="d-flex flex-column align-items-center w-25">
-        <img src="" alt="profile" style="width=100px; height=100px;" id="profileImageArea" class="my-3">
+        <img th:src="${user.profileURL}" alt="profile" style="width=100px; height=100px;" id="profileImageArea" class="my-3">
       </div>
-      <script th:inline="javascript">
-        const profileImageArea = document.getElementById('profileImageArea');
-        let profile = [[${user.profile}]];
-
-        profileImageArea.src = profile == null ? [[@{/image/noProfile.png}]] : [[@{|/upload/_profile/${user.profile}|}]];
-      </script>
       <span class="text-center fs-5">프로필 사진</span>
     </div>
 

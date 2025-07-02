@@ -66,7 +66,7 @@ public interface UserService {
 
     boolean updateLastLogin(String email);
 
-    void update(UserDTO userDTO);
+    int update(UserDTO userDTO);
 
     String remove(String name);
 
@@ -75,4 +75,6 @@ public interface UserService {
     String available(String email);
 
     String match(UserDTO userDTO);
+
+    String changePwd(UserDTO userDTO);
 }

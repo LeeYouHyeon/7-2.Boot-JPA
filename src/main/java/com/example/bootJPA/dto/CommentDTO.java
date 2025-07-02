@@ -3,6 +3,7 @@ package com.example.bootJPA.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.example.bootJPA.dto.TimeConverter.timeOrDate;
 
@@ -18,6 +19,8 @@ public class CommentDTO {
     private String writer;
     private String content;
     private LocalDateTime regDate, modDate;
+    private Long parent;
+    private Long replyCount;
 
     public String getRegTimeOrDate() {
         return timeOrDate(regDate);

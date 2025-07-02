@@ -4,73 +4,37 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/layout}">
 
-<div layout:fragment="content" class="w-50 mx-auto d-flex flex-column justify-content-center align-items-center border rounded bg-body-tertiary my-3">
-  <h3 class="text-center my-3">회원가입</h3>
+<div layout:fragment="content" th:with="user=${#authentication.principal.userDTO}"
+     class="w-25 mx-auto d-flex flex-column justify-content-center align-items-center border rounded bg-body-tertiary my-3">
+  <h3 class="text-center my-3">개인정보 수정</h3>
   <div id="joinForm" class="row w-100">
 
     <!--/* 프로필 사진 */-->
-    <div class="d-flex flex-column justify-content-evenly align-items-center col-3 pe-0 ps-3">
+    <div class="d-flex flex-column justify-content-evenly align-items-center col-5 pe-0 ps-3">
       <div class="d-flex flex-column align-items-center w-25">
-        <img src="" alt="미리보기" style="width=100px; height=100px;" id="profilePreview" class="my-3">
+        <img th:src="${user.profileURL}" alt="미리보기" style="width=100px; height=100px;" id="profilePreview" class="my-3">
       </div>
-      <script th:inline="javascript">
-        const profileImageArea = document.getElementById('profileImageArea');
-        let profile = [[${user.profile}]];
-
-        profileImageArea.src = profile == null ? [[@{/image/noProfile.png}]] : [[@{|/upload/_profile/${user.profile}|}]];
-      </script>
       <button type="button" class="btn btn-secondary mb-2" id="profileTrigger">프로필 사진 등록</button>
       <span class="p-1 w-75" style="font-size: 12px;">프로필 사진의 크기는 가로세로 각각 100픽셀입니다.</span>
       <input type="file" class="d-none" id="profileInput" accept="image/*">
     </div>
 
     <!--/* 기본정보 */-->
-    <div class="d-flex flex-column justify-content-around align-items-center col-9">
+    <div class="d-flex flex-column justify-content-around align-items-center col-7">
 
       <div class="row mb-3 w-100">
-        <div class="col-3 bg-body-tertiary d-flex justify-content align-items-center border rounded">
-          <label for="emailInput">
-            <span class="text-danger">* </span>이메일
-          </label>
-        </div>
-        <div class="col-9">
-          <input type="text" id="emailInput" name="email" class="form-control" required>
-        </div>
-      </div>
-      <div class="row mb-3 w-100">
-        <button class="btn btn-secondary me-3 col-3" id="emailCheckBtn">이메일 중복 확인</button>
-        <div id="emailCheckResult" class="col-8 d-flex"></div>
+        <div class="col-5 bg-body-tertiary d-flex justify-content align-items-center border rounded">이메일</div>
+        <div class="col-7 px-3 py-2" th:text="${user.email}"></div>
       </div>
 
       <div class="row mb-3 w-100">
-        <div class="col-3 bg-body-tertiary d-flex justify-content align-items-center border rounded">
-          <label for="pwd">
-            <span class="text-danger">* </span>비밀번호
-          </label>
-        </div>
-        <div class="col-9">
-          <input type="password" id="pwd" name="pwd" class="form-control" required>
-        </div>
-      </div>
-      <div class="row mb-3 w-100">
-        <div class="col-3 bg-body-tertiary d-flex justify-content align-items-center border rounded">
-          <label for="pwdCheck">
-            <span class="text-danger">* </span>비밀번호 확인
-          </label>
-        </div>
-        <div class="col-9">
-          <input type="password" id="pwdCheck" name="pwdCheck" class="form-control" required>
-        </div>
-      </div>
-
-      <div class="row mb-3 w-100">
-        <div class="col-3 bg-body-tertiary d-flex justify-content align-items-center border rounded">
+        <div class="col-5 bg-body-tertiary d-flex justify-content align-items-center border rounded">
           <label for="nickName">
             <span class="text-danger">* </span>닉네임
           </label>
         </div>
-        <div class="col-9">
-          <input type="text" id="nickName" name="nickName" class="form-control" required>
+        <div class="col-7">
+          <input type="text" id="nickName" name="nickName" class="form-control" th:value="${user.nickName}" required>
         </div>
       </div>
 
@@ -78,9 +42,9 @@
 
     <!--/* 제출버튼 */-->
     <div class="d-flex justify-content-center">
-      <button type="button" class="btn btn-primary mb-3" id="signUpBtn">회원가입</button>
+      <button type="button" class="btn btn-primary mb-3" id="updateBtn">개인정보 수정</button>
     </div>
   </div>
 
-  <script th:src="@{/js/userJoin.js}"></script>
+  <script th:src="@{/js/userModify.js}"></script>
 </div>

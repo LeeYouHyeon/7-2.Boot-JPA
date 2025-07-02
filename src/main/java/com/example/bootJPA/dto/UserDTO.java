@@ -33,4 +33,8 @@ public class UserDTO {
         }
         return answer;
     }
+
+    public String getProfileURL() {
+        return profile == null ? "/image/noProfile.png" : "/upload/_profile/" + profile;
+    }
 }

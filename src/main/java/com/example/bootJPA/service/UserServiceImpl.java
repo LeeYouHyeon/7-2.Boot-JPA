@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +24,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     @Override
@@ -56,10 +58,13 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void update(UserDTO userDTO) {
+    public int update(UserDTO userDTO) {
         Optional<User> optional = userRepository.findById(userDTO.getEmail());
-        if (optional.isEmpty()) return;
-        optional.get().setNickName(userDTO.getNickName());
+        if (optional.isEmpty()) return 0;
+        User user = optional.get();
+        user.setNickName(userDTO.getNickName());
+        if (userDTO.getProfile() != null) user.setProfile(userDTO.getProfile());
+        return 1;
     }
 
     @Transactional
@@ -89,7 +94,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public String match(UserDTO userDTO) {
         Optional<User> user = userRepository.findById(userDTO.getEmail());
-        return user.filter(value -> value.getPwd().equals(userDTO.getPwd()))
+        return user.filter(value -> passwordEncoder.matches(userDTO.getPwd(), value.getPwd()))
                 .map(value -> "1").orElse("0");
+    }
+
+    @Transactional
+    @Override
+    public String changePwd(UserDTO userDTO) {
+        Optional<User> user = userRepository.findById(userDTO.getEmail());
+        if (user.isEmpty()) return "0";
+        user.get().setPwd(userDTO.getPwd());
+        return "1";
     }
 }

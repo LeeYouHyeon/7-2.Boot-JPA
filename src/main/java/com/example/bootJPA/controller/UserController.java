@@ -1,6 +1,5 @@
 package com.example.bootJPA.controller;
 
-import com.example.bootJPA.dto.FileDTO;
 import com.example.bootJPA.dto.UserDTO;
 import com.example.bootJPA.handler.FileHandler;
 import com.example.bootJPA.handler.PagingHandler;
@@ -37,16 +36,15 @@ public class UserController {
     @ResponseBody
     @PostMapping("/join")
     public String join(@RequestPart("userDTO") UserDTO userDTO,
-                       @RequestPart("profile") MultipartFile profile,
+                       @RequestPart(name = "profile", required = false) MultipartFile profile,
                        Model model) {
         log.info(">>>> /user/join in");
         log.info(">>>> userDTO >> {}", userDTO);
         log.info(">>>> profile >> {}", profile);
         userDTO.encodePassword(passwordEncoder);
 
-        try {
-            String file = null;
-            if (!profile.isEmpty()) file = new FileHandler().uploadProfile(profile, userDTO.getEmail());
+        if (profile != null && !profile.isEmpty()) try {
+            String file = new FileHandler().uploadProfile(profile, userDTO.getEmail());
             userDTO.setProfile(file);
             log.info(">>>> profile image registered");
         } catch (Exception e) {
@@ -71,12 +69,19 @@ public class UserController {
         model.addAttribute("userDTO", userService.selectEmail(principal.getName()));
     }
 
+    @ResponseBody
     @PostMapping("/update")
-    public String update(UserDTO userDTO) {
-        userService.update(userDTO);
-        return "redirect:/user/logout";
+    public String update(@RequestPart(name = "userDTO") UserDTO userDTO,
+                         @RequestPart(name = "profile", required = false) MultipartFile profile) {
+        if (profile != null && !profile.isEmpty()) try {
+            userDTO.setProfile(
+                    new FileHandler().uploadProfile(
+                            profile, userDTO.getEmail()));
+        } catch (Exception e) {
+            return "프로필 이미지 업로드에 실패했습니다.";
+        }
+        return String.valueOf(userService.update(userDTO));
     }
-
 
     @GetMapping("/list")
     public void list(Model model,
@@ -108,12 +113,7 @@ public class UserController {
     @ResponseBody
     @PostMapping("/match")
     public String match(@RequestBody UserDTO userDTO) {
-        log.info(">>>> match email {}", userDTO.getEmail());
-        userDTO.encodePassword(passwordEncoder);
-        log.info(">>>> match pwd {}", userDTO.getPwd());
-        String isOk = userService.match(userDTO);
-        log.info(">>>> match result >> {}", isOk);
-        return isOk;
+        return userService.match(userDTO);
     }
 
     @GetMapping("/changePwd")
@@ -128,4 +128,10 @@ public class UserController {
         return "redirect:/";
     }
 
+    @PostMapping("/changePwd")
+    @ResponseBody
+    public String changePwd(@RequestBody UserDTO userDTO) {
+        userDTO.encodePassword(passwordEncoder);
+        return userService.changePwd(userDTO);
+    }
 }

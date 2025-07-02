@@ -23,4 +23,9 @@ public class Comment extends TimeBase {
 
     @Column(length = 1000)
     private String content;
+
+    private Long parent;
+
+    @Column(name = "reply_count")
+    private Long replyCount;
 }

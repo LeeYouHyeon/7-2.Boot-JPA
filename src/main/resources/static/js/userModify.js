@@ -1,16 +1,12 @@
 const MAX_WIDTH = 100, MAX_HEIGHT = 100;
 
 // HTML 요소 등록
-const [profileInput, profilePreview, profileTrigger,
-  emailInput, emailCheckBtn, emailResultArea,
-  pwd, pwdCheck, nickName, signUpBtn
-] = ['profileInput', 'profilePreview', 'profileTrigger',
-  'emailInput', 'emailCheckBtn', 'emailCheckResult',
-  'pwd', 'pwdCheck', 'nickName', 'signUpBtn'
-].map(e => document.getElementById(e));
+const [profilePreview, profileTrigger, profileInput, nickName, updateBtn]
+= ['profilePreview', 'profileTrigger', 'profileInput', 'nickName', 'updateBtn'].map(e => document.getElementById(e));
 
 // 프로필 관련
-let profileFile = undefined;
+let profileFile = undefined; // 새로 등록하는 경우에만 처리
+
 // 1. 프로필 사진 추가하기
 profileTrigger.addEventListener('click', () => {
   profileInput.click();
@@ -67,65 +63,23 @@ profileInput.addEventListener('change', () => {
   reader.readAsDataURL(rawImage);
 });
 
-// 기본정보 관련
-// 1. 이메일 중복체크
-let emailResult = undefined;
-emailInput.addEventListener('change', () => {
-  emailResult = undefined;
-  emailResultArea.innerText = '';
-});
-emailCheckBtn.addEventListener('click', () => {
-  if (emailInput.value == '') {
-    emailInput.focus();
-    return;
-  }
-  if (emailResult != undefined) return;
-
-  fetch('/user/check?email=' + emailInput.value)
-  .then(resp => resp.text())
-  .then(result => {
-    emailResultArea.innerHTML = result == '1' ?
-    '<div class="text-success d-flex align-items-center">사용 가능합니다.</div>' :
-    '<div class="text-danger d-flex align-items-center">이미 사용중입니다.</div>';
-    emailResult = result == '1';
-  });
-});
-
-// 2. 비밀번호 확인
-let pwdResult = undefined;
-function pwdValidation() {
-  if (pwd.value != pwdCheck.value) {
-    pwdResult = false;
-    return;
-  }
-
-  pwdResult = pwd.value.length > 4;
-}
-pwd.onchange = pwdValidation;
-pwdCheck.onchange = pwdValidation;
-
-signUpBtn.addEventListener('click', () => {
-  if (emailResult != true) {
-    emailInput.focus();
-    return;
-  }
-
-  if (pwdResult != true) {
-    pwd.focus();
+// update
+updateBtn.addEventListener('click', () => {
+  if (nickName.value == '') {
+    nickName.focus();
     return;
   }
 
   const formData = new FormData();
   if (profileFile != undefined) formData.append('profile', profileFile);
   formData.append("userDTO", new Blob([JSON.stringify({
-    email: emailInput.value,
-    pwd: pwd.value,
+    email: email,
     nickName: nickName.value
   })], {
     type: "application/json"
   }));
 
-  fetch('/user/join', {
+  fetch('/user/update', {
     method: 'post',
     body: formData,
     headers: {
@@ -134,11 +88,10 @@ signUpBtn.addEventListener('click', () => {
   }).then(resp => resp.text())
   .then(result => {
     if (result == '1') {
-      alert('회원가입에 성공했습니다. 로그인 해주세요.');
-      location.href = "/user/login";
+      alert('개인정보가 수정되었습니다. 다시 로그인해주세요.');
+      document.getElementById('logout').click();
     } else {
-      alert('회원가입에 실패했습니다.');
-      console.log(result);
+      alert('개인정보 수정에 실패했습니다.');
     }
-  });
-});
+  })
+})

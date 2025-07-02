@@ -4,7 +4,7 @@ import com.example.bootJPA.dto.CommentDTO;
 import com.example.bootJPA.entity.Comment;
 import org.springframework.data.domain.Page;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface CommentService {
     default Comment convertDtoToEntity(CommentDTO commentDTO) {
@@ -13,6 +13,8 @@ public interface CommentService {
                 .bno(commentDTO.getBno())
                 .writer(commentDTO.getWriter())
                 .content(commentDTO.getContent())
+                .parent(commentDTO.getParent())
+                .replyCount(commentDTO.getReplyCount())
                 .build();
     }
 
@@ -24,6 +26,8 @@ public interface CommentService {
                 .content(comment.getContent())
                 .regDate(comment.getRegDate())
                 .modDate(comment.getModDate())
+                .parent(comment.getParent())
+                .replyCount(comment.getReplyCount())
                 .build();
     }
 
