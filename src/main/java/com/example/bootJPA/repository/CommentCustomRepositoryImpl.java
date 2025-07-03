@@ -28,7 +28,7 @@ public class CommentCustomRepositoryImpl implements CommentCustomRepository {
         List<Comment> result = queryFactory
                 .selectFrom(comment)
                 .where(condition)
-                .orderBy(comment.cno.asc())
+                .orderBy(comment.cno.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
