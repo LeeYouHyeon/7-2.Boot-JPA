@@ -3,7 +3,6 @@ package com.example.bootJPA.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static com.example.bootJPA.dto.TimeConverter.timeOrDate;
 

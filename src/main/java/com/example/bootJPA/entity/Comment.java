@@ -26,6 +26,6 @@ public class Comment extends TimeBase {
 
     private Long parent;
 
-    @Column(name = "reply_count")
+    @Column(name = "reply_count", nullable = false)
     private Long replyCount;
 }

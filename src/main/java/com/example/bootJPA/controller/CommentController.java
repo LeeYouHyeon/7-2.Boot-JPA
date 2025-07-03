@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -25,6 +27,12 @@ public class CommentController {
     public PagingHandler<CommentDTO> list(@PathVariable("bno") Long bno, @PathVariable("page") int page) {
 //        return commentService.getList(bno);
         return new PagingHandler<>(commentService.getPageList(bno, page));
+    }
+
+    @ResponseBody
+    @GetMapping("/reply/{cno}")
+    public List<CommentDTO> reply(@PathVariable("cno") Long cno) {
+        return commentService.getReply(cno);
     }
 
     @ResponseBody

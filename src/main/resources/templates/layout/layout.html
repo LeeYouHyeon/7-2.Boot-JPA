@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en"
       xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.next.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.next.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <meta name="_csrf" th:content="${_csrf.token}" />
     <meta name="_csrf_header" th:content="${_csrf.headerName}" />
     <script th:inline="javascript">
-        const email = [[${#authentication.name}]];
         const csrfHeader = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
         const csrfToken = document.querySelector('meta[name="_csrf"]').getAttribute('content');
+    </script>
+    <script th:inline="javascript" sec:authorize="${isAuthenticated()}">
+        const email = [[${#authentication.principal.userDTO.email}]];
+    </script>
+    <script th:inline="javascript" sec:authorize="${isAnonymous()}">
+        const email = null;
     </script>
 
     <title>Spring Boot JPA</title>

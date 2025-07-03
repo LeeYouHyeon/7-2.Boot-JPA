@@ -64,21 +64,21 @@
     </a>
     <button type="button" class="btn btn-danger" id="deleteBtn">삭제</button>
   </div>
-  <div class="container-md w-50 border rounded" id="commentArea">
+
+  <div class="container-md w-50 p-0" id="commentArea">
+    <div class="container-md mb-3 px-4 py-3 border rounded" id="commentListArea"></div>
+
     <!--/* 댓글 입력 */-->
-    <div class="row py-3 mb-3 justify-content-center align-items-center bg-body-tertiary">댓글</div>
-    <div class="container-md mb-3 p-3" id="commentRegisterArea" sec:authorize="${isAuthenticated()}">
-      <div class="row my-3">
-        <div class="col-3 d-flex justify-content-center align-items-center" th:text="${#authentication.name}"></div>
-        <div class="col-7">
+    <div class="container-md mb-3" id="commentRegisterArea" sec:authorize="${isAuthenticated()}">
+      <div class="row my-3 p-0">
+        <div class="col p-0">
           <input type="text" class="form-control h-100" id="cmtContent" aria-label="content" placeholder="댓글 입력">
         </div>
-        <div class="col-2 d-flex justify-content-center">
+        <div class="col-1 d-flex justify-content-end p-0">
           <button type="button" class="btn btn-primary" id="cmtRegisterBtn">등록</button>
         </div>
       </div>
     </div>
-    <div class="container-md mb-3 p-3 border rounded" id="commentListArea"></div>
   </div>
 
   <script th:inline="javascript">

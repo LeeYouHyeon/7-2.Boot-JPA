@@ -4,7 +4,7 @@ import com.example.bootJPA.dto.CommentDTO;
 import com.example.bootJPA.entity.Comment;
 import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface CommentService {
     default Comment convertDtoToEntity(CommentDTO commentDTO) {
@@ -31,11 +31,13 @@ public interface CommentService {
                 .build();
     }
 
-    long post(CommentDTO commentDTO);
+    Long post(CommentDTO commentDTO);
 
     Page<CommentDTO> getPageList(Long bno, int page);
 
     void delete(Long cno);
 
     void update(CommentDTO commentDTO);
+
+    List<CommentDTO> getReply(Long cno);
 }
