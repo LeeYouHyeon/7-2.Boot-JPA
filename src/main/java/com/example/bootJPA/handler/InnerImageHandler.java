@@ -13,7 +13,15 @@ import java.util.UUID;
 
 @Slf4j
 public class InnerImageHandler {
-    private final String filePath = "D:\\web_0226_lyh\\_myProject\\_java\\_fileUpload\\innerImage\\";
+    private final String filePath;
+
+    // 모듈화를 위한 생성자
+    public InnerImageHandler() {
+        this("D:\\web_0226_lyh\\_myProject\\_java\\_fileUpload\\innerImage\\");
+    }
+    public InnerImageHandler(String path) {
+        this.filePath = path;
+    }
 
     public void saveBase64(Element image) throws Exception {
         try {
