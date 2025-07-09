@@ -20,52 +20,52 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 @EnableWebSecurity
 public class SecurityConfig {
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
-    }
+  @Bean
+  PasswordEncoder passwordEncoder() {
+    return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+  }
 
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http.authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/dist/**", "/image/**", "/js/**", "/upload/**", "/error/**",
-                                        "/", "/board/list/**", "/board/detail/**", "/comment/list/**", "/comment/reply/**").permitAll()
-                                .requestMatchers("/user/join", "/user/login", "/user/loginFailed/**", "/user/check/**").anonymous()
-                                .requestMatchers("/user/list").hasAnyRole("ADMIN")
-                                .anyRequest().authenticated())
-                .formLogin(login -> login
-                        .usernameParameter("email")
-                        .passwordParameter("pwd")
-                        .loginPage("/user/login")
-                        .successHandler(authenticationSuccessHandler())
-                        .failureHandler(authenticationFailureHandler())
-                        .permitAll())
-                .logout(logout -> logout
-                        .logoutUrl("/user/logout")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .logoutSuccessUrl("/"))
-                .build();
-    }
+  @Bean
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http.authorizeHttpRequests(authorize ->
+            authorize.requestMatchers("/dist/**", "/image/**", "/js/**", "/upload/**", "/error/**",
+                    "/", "/board/list/**", "/board/detail/**", "/comment/list/**", "/comment/reply/**").permitAll()
+                .requestMatchers("/user/join", "/user/login", "/user/loginFailed/**", "/user/check/**").anonymous()
+                .requestMatchers("/user/list").hasAnyRole("ADMIN")
+                .anyRequest().authenticated())
+        .formLogin(login -> login
+            .usernameParameter("email")
+            .passwordParameter("pwd")
+            .loginPage("/user/login")
+            .successHandler(authenticationSuccessHandler())
+            .failureHandler(authenticationFailureHandler())
+            .permitAll())
+        .logout(logout -> logout
+            .logoutUrl("/user/logout")
+            .invalidateHttpSession(true)
+            .deleteCookies("JSESSIONID")
+            .logoutSuccessUrl("/"))
+        .build();
+  }
 
-    @Bean
-    UserDetailsService customUserService() {
-        return new CustomUserService();
-    }
+  @Bean
+  UserDetailsService customUserService() {
+    return new CustomUserService();
+  }
 
-    @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
-        throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
-    }
+  @Bean
+  AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+      throws Exception {
+    return authenticationConfiguration.getAuthenticationManager();
+  }
 
-    @Bean
-    AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new LoginSuccessHandler();
-    }
+  @Bean
+  AuthenticationSuccessHandler authenticationSuccessHandler() {
+    return new LoginSuccessHandler();
+  }
 
-    @Bean
-    AuthenticationFailureHandler authenticationFailureHandler() {
-        return new LoginFailureHandler();
-    }
+  @Bean
+  AuthenticationFailureHandler authenticationFailureHandler() {
+    return new LoginFailureHandler();
+  }
 }

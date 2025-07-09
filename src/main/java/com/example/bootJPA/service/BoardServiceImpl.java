@@ -23,25 +23,25 @@ import java.util.List;
 @Slf4j
 @Service
 public class BoardServiceImpl implements BoardService {
-    private final BoardRepository boardRepository;
-    private final FileRepository fileRepository;
+  private final BoardRepository boardRepository;
+  private final FileRepository fileRepository;
 
-    @Transactional
-    @Override
-    public Long insert(BoardFileDTO boardFileDTO) {
-        // 저장 객체는 Board
-        // save() : 저장
-        // entity 객체를 파라미터로 전송
-        long bno = boardRepository.save(convertDtoToEntity(boardFileDTO.getBoardDTO())).getBno();
+  @Transactional
+  @Override
+  public Long insert(BoardFileDTO boardFileDTO) {
+    // 저장 객체는 Board
+    // save() : 저장
+    // entity 객체를 파라미터로 전송
+    long bno = boardRepository.save(convertDtoToEntity(boardFileDTO.getBoardDTO())).getBno();
 
-        List<FileDTO> files = boardFileDTO.getFileList();
-        if (files != null) for (FileDTO fileDTO : files) {
-            fileDTO.setBno(bno);
-            fileRepository.save(convertDtoToEntity(fileDTO));
-        }
-
-        return bno;
+    List<FileDTO> files = boardFileDTO.getFileList();
+    if (files != null) for (FileDTO fileDTO : files) {
+      fileDTO.setBno(bno);
+      fileRepository.save(convertDtoToEntity(fileDTO));
     }
+
+    return bno;
+  }
 
 //    @Override
 //    public List<BoardDTO> getList() {
@@ -61,55 +61,55 @@ public class BoardServiceImpl implements BoardService {
 //        */
 //    }
 
-    @Override
-    public Page<BoardDTO> getList(int pageNo, int pageSize, String type, String keyword) {
-        Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("bno").descending());
-        return boardRepository.searchBoard(type, keyword, pageable)
-                .map(this::convertEntityToDto);
-    }
+  @Override
+  public Page<BoardDTO> getList(int pageNo, int pageSize, String type, String keyword) {
+    Pageable pageable = PageRequest.of(pageNo - 1, pageSize, Sort.by("bno").descending());
+    return boardRepository.searchBoard(type, keyword, pageable)
+        .map(this::convertEntityToDto);
+  }
 
-    @Transactional
-    @Override
-    public BoardFileDTO detail(Long bno, boolean isReal) {
+  @Transactional
+  @Override
+  public BoardFileDTO detail(Long bno, boolean isReal) {
         /*
         Optional<T> : NullPointerException을 막는 용도
         (Optional 객체).isEmpty() : null 이면 true / 아니면 false
         (Optional 객체).isPresent() : isEmpty()와 반대
         (Optional 객체).get() : 언박싱
          */
-        Board board = boardRepository.findById(bno).orElse(null);
-        if (board == null) return null;
+    Board board = boardRepository.findById(bno).orElse(null);
+    if (board == null) return null;
 
-        if (isReal) board.setReadCount(board.getReadCount() + 1);
+    if (isReal) board.setReadCount(board.getReadCount() + 1);
 
-        BoardDTO boardDTO = this.convertEntityToDto(board);
-        return new BoardFileDTO(boardDTO,
-                fileRepository.findByBno(boardDTO.getBno())
-                        .stream()
-                        .map(this::convertEntityToDto)
-                        .toList());
-    }
+    BoardDTO boardDTO = this.convertEntityToDto(board);
+    return new BoardFileDTO(boardDTO,
+        fileRepository.findByBno(boardDTO.getBno())
+            .stream()
+            .map(this::convertEntityToDto)
+            .toList());
+  }
 
-    @Override
-    public void delete(Long bno) {
-        boardRepository.deleteById(bno);
-    }
+  @Override
+  public void delete(Long bno) {
+    boardRepository.deleteById(bno);
+  }
 
-    /* save : boardDTO에 id가 없으면 insert, 있으면 update로 처리
-     * id가 DB에 없으면 DB 에러가 생김. EntityNotFoundException => 정보 유실의 위험이 커짐
-     * 없는 정보에 대한 데이터가 사라짐(null)
-     * 변동 감지 (Dirty Checking) 미작동 가능성이 커짐
-     */
-    /* 해결 방법
-     * 1) findById(bno)를 통해 먼저 조회 => 영속상태를 만든 후 수정 => save
-     * 2) @Transactional : Dirty Checking 으로 업데이트 가능 / save() 없이도 가능
-     *   UPDATE만 가능
-     * */
-    /* Dirty Checking
-     * 객체가 영속성 컨텍스트에 올라가있을 때 해당 객체의 필드가 변경되면,
-     * 트랜잭션이 종료되기 전에 JPA 가 변경한 부분만 자동 감지하여 update 쿼리를 실행
-     * save() 없이(명시적으로 호출하지 않아도) 수정된 필드를 DB에 자동 반영함
-     * */
+  /* save : boardDTO에 id가 없으면 insert, 있으면 update로 처리
+   * id가 DB에 없으면 DB 에러가 생김. EntityNotFoundException => 정보 유실의 위험이 커짐
+   * 없는 정보에 대한 데이터가 사라짐(null)
+   * 변동 감지 (Dirty Checking) 미작동 가능성이 커짐
+   */
+  /* 해결 방법
+   * 1) findById(bno)를 통해 먼저 조회 => 영속상태를 만든 후 수정 => save
+   * 2) @Transactional : Dirty Checking 으로 업데이트 가능 / save() 없이도 가능
+   *   UPDATE만 가능
+   * */
+  /* Dirty Checking
+   * 객체가 영속성 컨텍스트에 올라가있을 때 해당 객체의 필드가 변경되면,
+   * 트랜잭션이 종료되기 전에 JPA 가 변경한 부분만 자동 감지하여 update 쿼리를 실행
+   * save() 없이(명시적으로 호출하지 않아도) 수정된 필드를 DB에 자동 반영함
+   * */
 //    @Override
 //    public void update(BoardDTO boardDTO) {
 //        // 1. 기존 객체를 가져와서 수정한 후 다시 저장
@@ -122,37 +122,37 @@ public class BoardServiceImpl implements BoardService {
 //        boardRepository.save(entity);
 //    }
 
-    @Transactional
-    @Override
-    public void update(BoardFileDTO boardFileDTO) {
-        log.info(">>>> board service update in");
-        // 2. Dirty Checking
-        BoardDTO boardDTO = boardFileDTO.getBoardDTO();
+  @Transactional
+  @Override
+  public void update(BoardFileDTO boardFileDTO) {
+    log.info(">>>> board service update in");
+    // 2. Dirty Checking
+    BoardDTO boardDTO = boardFileDTO.getBoardDTO();
 
-        Board entity = boardRepository
-                .findById(boardDTO.getBno())
-                .orElse(null);
-        if (entity == null) return;
+    Board entity = boardRepository
+        .findById(boardDTO.getBno())
+        .orElse(null);
+    if (entity == null) return;
 
-        log.info(">> entity loaded");
-        entity.setTitle(boardDTO.getTitle());
-        entity.setContent(boardDTO.getContent());
-        log.info(">> dto set ");
+    log.info(">> entity loaded");
+    entity.setTitle(boardDTO.getTitle());
+    entity.setContent(boardDTO.getContent());
+    log.info(">> dto set ");
 
-        List<FileDTO> files = boardFileDTO.getFileList();
-        if (files != null) for (FileDTO fileDTO : files) {
-            fileDTO.setBno(boardDTO.getBno());
-            fileRepository.save(convertDtoToEntity(fileDTO));
-        }
-        log.info(">> file saved");
+    List<FileDTO> files = boardFileDTO.getFileList();
+    if (files != null) for (FileDTO fileDTO : files) {
+      fileDTO.setBno(boardDTO.getBno());
+      fileRepository.save(convertDtoToEntity(fileDTO));
     }
+    log.info(">> file saved");
+  }
 
-    @Transactional
-    @Override
-    public void fileRemove(String uuid) throws EntityNotFoundException {
-        File file = fileRepository.findById(uuid)
-                .orElseThrow(() -> new EntityNotFoundException("없는 파일"));
+  @Transactional
+  @Override
+  public void fileRemove(String uuid) throws EntityNotFoundException {
+    File file = fileRepository.findById(uuid)
+        .orElseThrow(() -> new EntityNotFoundException("없는 파일"));
 
-        fileRepository.delete(file);
-    }
+    fileRepository.delete(file);
+  }
 }

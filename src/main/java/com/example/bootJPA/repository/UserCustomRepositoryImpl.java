@@ -14,43 +14,43 @@ import static com.example.bootJPA.entity.QUser.user;
 
 public class UserCustomRepositoryImpl implements UserCustomRepository {
 
-    private final JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 
-    public UserCustomRepositoryImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
+  public UserCustomRepositoryImpl(EntityManager em) {
+    this.queryFactory = new JPAQueryFactory(em);
+  }
+
+  @Override
+  public Page<User> searchUser(String type, String keyword, Pageable pageable) {
+    BooleanExpression condition = null;
+
+    if (type != null && keyword != null) {
+      char[] typeArr = type.toCharArray();
+      for (char t : typeArr) {
+        condition = switch (t) {
+          case 'e' -> condition == null ?
+              user.email.containsIgnoreCase(keyword)
+              : condition.or(user.email.containsIgnoreCase(keyword));
+          case 'n' -> condition == null ?
+              user.nickName.containsIgnoreCase(keyword)
+              : condition.or(user.nickName.containsIgnoreCase(keyword));
+          default -> condition;
+        };
+      }
     }
 
-    @Override
-    public Page<User> searchUser(String type, String keyword, Pageable pageable) {
-        BooleanExpression condition = null;
+    List<User> result = queryFactory
+        .selectFrom(user)
+        .where(condition)
+        .orderBy(user.regDate.asc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
+    long totalCount = queryFactory
+        .selectFrom(user)
+        .where(condition)
+        .fetch().size();
 
-        if (type != null && keyword != null) {
-            char[] typeArr = type.toCharArray();
-            for (char t : typeArr) {
-                condition = switch (t) {
-                    case 'e' -> condition == null ?
-                            user.email.containsIgnoreCase(keyword)
-                            : condition.or(user.email.containsIgnoreCase(keyword));
-                    case 'n' -> condition == null ?
-                            user.nickName.containsIgnoreCase(keyword)
-                            : condition.or(user.nickName.containsIgnoreCase(keyword));
-                    default -> condition;
-                };
-            }
-        }
-
-        List<User> result = queryFactory
-                .selectFrom(user)
-                .where(condition)
-                .orderBy(user.regDate.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-        long totalCount = queryFactory
-                .selectFrom(user)
-                .where(condition)
-                .fetch().size();
-
-        return new PageImpl<>(result, pageable, totalCount);
-    }
+    return new PageImpl<>(result, pageable, totalCount);
+  }
 }

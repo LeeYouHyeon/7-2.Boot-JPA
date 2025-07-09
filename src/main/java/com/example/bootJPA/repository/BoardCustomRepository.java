@@ -6,7 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface BoardCustomRepository {
 
-    /* type, keyword, pageable을 받아서 Page<Board>를 리턴하는 메서드 생성 */
-    Page<Board> searchBoard(String type, String keyword, Pageable pageable);
+  /* type, keyword, pageable을 받아서 Page<Board>를 리턴하는 메서드 생성 */
+  Page<Board> searchBoard(String type, String keyword, Pageable pageable);
 
 }

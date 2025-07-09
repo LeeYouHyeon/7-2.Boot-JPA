@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @EntityListeners(value = {AuditingEntityListener.class})
 @Getter
 public class TimeBase {
-    /* 등록일, 수정일만 따로 빼서 관리하는 슈퍼클래스 */
-    @CreatedDate
-    @Column(name = "reg_date", updatable = false)
-    private LocalDateTime regDate;
+  /* 등록일, 수정일만 따로 빼서 관리하는 슈퍼클래스 */
+  @CreatedDate
+  @Column(name = "reg_date", updatable = false)
+  private LocalDateTime regDate;
 
-    @LastModifiedDate
-    @Column(name = "mod_date")
-    private LocalDateTime modDate;
+  @LastModifiedDate
+  @Column(name = "mod_date")
+  private LocalDateTime modDate;
 }

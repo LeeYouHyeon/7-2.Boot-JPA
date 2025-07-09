@@ -15,17 +15,17 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 public class User extends TimeBase {
-    @Id
-    private String email;
+  @Id
+  private String email;
 
-    @Column(nullable = false)
-    private String pwd;
+  @Column(nullable = false)
+  private String pwd;
 
-    @Column(name = "nick_name")
-    private String nickName;
+  @Column(name = "nick_name")
+  private String nickName;
 
-    @Column(name = "last_login")
-    private LocalDateTime lastLogin;
+  @Column(name = "last_login")
+  private LocalDateTime lastLogin;
 
-    private String profile;
+  private String profile;
 }

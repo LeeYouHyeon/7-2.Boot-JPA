@@ -5,5 +5,5 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CommentCustomRepository {
-    Page<Comment> findByBno(Long bno, Pageable pageable);
+  Page<Comment> findByBno(Long bno, Pageable pageable);
 }

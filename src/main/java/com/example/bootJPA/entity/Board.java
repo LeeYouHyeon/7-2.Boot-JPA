@@ -23,22 +23,22 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class Board extends TimeBase {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bno;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long bno;
 
-    @Column(length = 200, nullable = false)
-    private String title;
+  @Column(length = 200, nullable = false)
+  private String title;
 
-    @Column(length = 200, nullable = false)
-    private String writer;
+  @Column(length = 200, nullable = false)
+  private String writer;
 
-    @Column(length = 2000, nullable = false)
-    private String content;
+  @Column(length = 2000, nullable = false)
+  private String content;
 
-    @Column(name="read_count")
-    private long readCount;
+  @Column(name = "read_count")
+  private long readCount;
 
-    @Column(name="cmt_count")
-    private int cmtCount;
+  @Column(name = "cmt_count")
+  private int cmtCount;
 }

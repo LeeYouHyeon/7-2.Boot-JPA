@@ -14,23 +14,23 @@ import lombok.*;
 @Entity
 @Builder
 public class File extends TimeBase {
-    @Id
-    private String uuid;
+  @Id
+  private String uuid;
 
-    @Column(name = "save_dir", nullable = false)
-    private String saveDir;
+  @Column(name = "save_dir", nullable = false)
+  private String saveDir;
 
-    @Column(name = "file_name", nullable = false)
-    private String fileName;
+  @Column(name = "file_name", nullable = false)
+  private String fileName;
 
-    @Column(name = "file_type", nullable = false, columnDefinition = "int default 0")
-    private int fileType;
+  @Column(name = "file_type", nullable = false, columnDefinition = "int default 0")
+  private int fileType;
 
-    // @Column 어노테이션은 필수 아님
-    private long bno;
+  // @Column 어노테이션은 필수 아님
+  private long bno;
 
-    @Column(name = "file_size")
-    private long fileSize;
+  @Column(name = "file_size")
+  private long fileSize;
 }
 
 /* 기본값 설정 방법

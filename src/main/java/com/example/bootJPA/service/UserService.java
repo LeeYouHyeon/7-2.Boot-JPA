@@ -9,72 +9,73 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface UserService {
-    default AuthUserDTO convertEntityToDto(AuthUser authUser) {
-        return AuthUserDTO.builder()
-                .id(authUser.getId())
-                .email(authUser.getEmail())
-                .auth(authUser.getAuth())
-                .build();
-    }
-    default List<AuthUserDTO> convertEntityToDto(List<AuthUser> authUserList) {
-        return authUserList.stream()
-                .map(this::convertEntityToDto)
-                .toList();
-    }
+  default AuthUserDTO convertEntityToDto(AuthUser authUser) {
+    return AuthUserDTO.builder()
+        .id(authUser.getId())
+        .email(authUser.getEmail())
+        .auth(authUser.getAuth())
+        .build();
+  }
 
-    default AuthUser convertDtoToEntity(AuthUserDTO authUserDTO) {
-        return AuthUser.builder()
-                .id(authUserDTO.getId())
-                .email(authUserDTO.getEmail())
-                .auth(authUserDTO.getAuth())
-                .build();
-    }
+  default List<AuthUserDTO> convertEntityToDto(List<AuthUser> authUserList) {
+    return authUserList.stream()
+        .map(this::convertEntityToDto)
+        .toList();
+  }
 
-    default UserDTO convertEntityToDto(User user, List<AuthUser> authUserList) {
-        return UserDTO.builder()
-                .email(user.getEmail())
-                .pwd(user.getPwd())
-                .nickName(user.getNickName())
-                .lastLogin(user.getLastLogin())
-                .regDate(user.getRegDate())
-                .modDate(user.getModDate())
-                .authList(convertEntityToDto(authUserList))
-                .profile(user.getProfile())
-                .build();
-    }
+  default AuthUser convertDtoToEntity(AuthUserDTO authUserDTO) {
+    return AuthUser.builder()
+        .id(authUserDTO.getId())
+        .email(authUserDTO.getEmail())
+        .auth(authUserDTO.getAuth())
+        .build();
+  }
 
-    default User convertDtoToEntity(UserDTO userDTO) {
-        return User.builder()
-                .email(userDTO.getEmail())
-                .pwd(userDTO.getPwd())
-                .nickName(userDTO.getNickName())
-                .lastLogin(userDTO.getLastLogin())
-                .profile(userDTO.getProfile())
-                .build();
-    }
+  default UserDTO convertEntityToDto(User user, List<AuthUser> authUserList) {
+    return UserDTO.builder()
+        .email(user.getEmail())
+        .pwd(user.getPwd())
+        .nickName(user.getNickName())
+        .lastLogin(user.getLastLogin())
+        .regDate(user.getRegDate())
+        .modDate(user.getModDate())
+        .authList(convertEntityToDto(authUserList))
+        .profile(user.getProfile())
+        .build();
+  }
 
-    default AuthUser defaultAuth(String email) {
-        return AuthUser.builder()
-                .email(email)
-                .auth("ROLE_USER")
-                .build();
-    }
+  default User convertDtoToEntity(UserDTO userDTO) {
+    return User.builder()
+        .email(userDTO.getEmail())
+        .pwd(userDTO.getPwd())
+        .nickName(userDTO.getNickName())
+        .lastLogin(userDTO.getLastLogin())
+        .profile(userDTO.getProfile())
+        .build();
+  }
 
-    String register(UserDTO userDTO);
+  default AuthUser defaultAuth(String email) {
+    return AuthUser.builder()
+        .email(email)
+        .auth("ROLE_USER")
+        .build();
+  }
 
-    UserDTO selectEmail(String username);
+  String register(UserDTO userDTO);
 
-    boolean updateLastLogin(String email);
+  UserDTO selectEmail(String username);
 
-    int update(UserDTO userDTO);
+  boolean updateLastLogin(String email);
 
-    String remove(String name);
+  int update(UserDTO userDTO);
 
-    Page<UserDTO> getList(int pageNo, int i, String type, String keyword);
+  String remove(String name);
 
-    String available(String email);
+  Page<UserDTO> getList(int pageNo, int i, String type, String keyword);
 
-    String match(UserDTO userDTO);
+  String available(String email);
 
-    String changePwd(UserDTO userDTO);
+  String match(UserDTO userDTO);
+
+  String changePwd(UserDTO userDTO);
 }

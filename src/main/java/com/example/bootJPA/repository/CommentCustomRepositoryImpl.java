@@ -14,30 +14,30 @@ import static com.example.bootJPA.entity.QComment.comment;
 
 public class CommentCustomRepositoryImpl implements CommentCustomRepository {
 
-    private final JPAQueryFactory queryFactory;
+  private final JPAQueryFactory queryFactory;
 
-    public CommentCustomRepositoryImpl(EntityManager em) {
-        this.queryFactory = new JPAQueryFactory(em);
-    }
+  public CommentCustomRepositoryImpl(EntityManager em) {
+    this.queryFactory = new JPAQueryFactory(em);
+  }
 
-    @Override
-    public Page<Comment> findByBno(Long bno, Pageable pageable) {
-        BooleanExpression condition = comment.parent.isNull()
-                .and(comment.bno.eq(bno));
+  @Override
+  public Page<Comment> findByBno(Long bno, Pageable pageable) {
+    BooleanExpression condition = comment.parent.isNull()
+        .and(comment.bno.eq(bno));
 
-        List<Comment> result = queryFactory
-                .selectFrom(comment)
-                .where(condition)
-                .orderBy(comment.cno.desc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+    List<Comment> result = queryFactory
+        .selectFrom(comment)
+        .where(condition)
+        .orderBy(comment.cno.desc())
+        .offset(pageable.getOffset())
+        .limit(pageable.getPageSize())
+        .fetch();
 
-        long totalCount = queryFactory
-                .selectFrom(comment)
-                .where(condition)
-                .fetch().size();
+    long totalCount = queryFactory
+        .selectFrom(comment)
+        .where(condition)
+        .fetch().size();
 
-        return new PageImpl<>(result, pageable, totalCount);
-    }
+    return new PageImpl<>(result, pageable, totalCount);
+  }
 }

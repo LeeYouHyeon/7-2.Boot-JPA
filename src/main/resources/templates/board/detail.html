@@ -5,58 +5,60 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{layout/layout}">
 <div layout:fragment="content" th:with="bvo=${boardFileDTO.boardDTO}" class="mt-5">
-    <div class="container-md w-50 border border-bottom-0 rounded-top">
-      <div class="row border-bottom">
-        <div class="col-1 d-flex py-3 justify-content-center align-items-center border-end bg-body-tertiary">제목</div>
-        <div class="col-11 d-flex justify-content-center align-items-center">[[${bvo.title}]]</div>
-      </div>
-      <div class="row mb-3 border-bottom">
-        <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary py-3">작성자</div>
-        <div class="col-2 d-flex justify-content-center align-items-center border-end">[[${bvo.writer}]]</div>
-        <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary">작성일</div>
-        <div class="col-2 d-flex justify-content-evenly align-items-center border-end pe-3">[[${bvo.regTimeOrDate}]]</div>
-        <div class="col-2 d-flex justify-content-center align-items-center border-end bg-body-tertiary">최근 수정일</div>
-        <div class="col-2 d-flex justify-content-evenly align-items-center border-end pe-3">[[${bvo.modTimeOrDate}]]</div>
-        <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary">조회수</div>
-        <div class="col-1 d-flex justify-content-center align-items-center">[[${bvo.readCount}]]</div>
-      </div>
-      <div class="pb-3 px-2" th:utext="${bvo.content}"></div>
+  <div class="container-md w-50 border border-bottom-0 rounded-top">
+    <div class="row border-bottom">
+      <div class="col-1 d-flex py-3 justify-content-center align-items-center border-end bg-body-tertiary">제목</div>
+      <div class="col-11 d-flex justify-content-center align-items-center">[[${bvo.title}]]</div>
     </div>
-    <!--/* 등록된 파일 출력 */-->
-    <div class="container-md w-50 mb-3 border rounded-bottom" th:with="files=${boardFileDTO.fileList}">
-      <div class="row">
-        <div class="col d-flex justify-content-center align-items-center bg-body-tertiary py-3 border-bottom">첨부파일</div>
+    <div class="row mb-3 border-bottom">
+      <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary py-3">작성자</div>
+      <div class="col-2 d-flex justify-content-center align-items-center border-end">[[${bvo.writer}]]</div>
+      <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary">작성일</div>
+      <div class="col-2 d-flex justify-content-evenly align-items-center border-end pe-3">[[${bvo.regTimeOrDate}]]</div>
+      <div class="col-2 d-flex justify-content-center align-items-center border-end bg-body-tertiary">최근 수정일</div>
+      <div class="col-2 d-flex justify-content-evenly align-items-center border-end pe-3">[[${bvo.modTimeOrDate}]]</div>
+      <div class="col-1 d-flex justify-content-center align-items-center border-end bg-body-tertiary">조회수</div>
+      <div class="col-1 d-flex justify-content-center align-items-center">[[${bvo.readCount}]]</div>
+    </div>
+    <div class="pb-3 px-2" th:utext="${bvo.content}"></div>
+  </div>
+  <!--/* 등록된 파일 출력 */-->
+  <div class="container-md w-50 mb-3 border rounded-bottom" th:with="files=${boardFileDTO.fileList}">
+    <div class="row">
+      <div class="col d-flex justify-content-center align-items-center bg-body-tertiary py-3 border-bottom">첨부파일</div>
+    </div>
+    <div class="row bg-body-tertiary">
+      <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end"></div>
+      <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end">번호</div>
+      <div class="col-6 d-flex justify-content-center align-items-center py-3 border-end">파일명</div>
+      <div class="col-2 d-flex justify-content-center align-items-center py-3 border-end">미리보기</div>
+      <div class="col-2 d-flex justify-content-center align-items-center py-3">크기</div>
+    </div>
+    <div class="row border-top" th:if="${files == null || files.size() == 0}">
+      <div class="col d-flex justify-content-center align-items-center py-3">-</div>
+    </div>
+    <div class="row border-top" th:data-realsize="${file.fileSize}" th:data-uuid="${file.uuid}"
+         th:each="file, status: ${files}">
+      <div class="col-1 d-flex justify-content-center align-items-center">
+        <button class="btn btn-outline-danger invisible fileRemoveBtn" type="button">X</button>
       </div>
-      <div class="row bg-body-tertiary">
-        <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end"></div>
-        <div class="col-1 d-flex justify-content-center align-items-center py-3 border-end">번호</div>
-        <div class="col-6 d-flex justify-content-center align-items-center py-3 border-end">파일명</div>
-        <div class="col-2 d-flex justify-content-center align-items-center py-3 border-end">미리보기</div>
-        <div class="col-2 d-flex justify-content-center align-items-center py-3">크기</div>
+      <div class="col-1 d-flex justify-content-center align-items-center py-3" th:text="${status.count}"></div>
+      <div class="col-6 d-flex">
+        <a class="d-flex align-items-center ps-2"
+           th:download="${file.fileName}" th:href="@{|/upload/${file.saveDir}/${file.uuid}_${file.fileName}|}">
+          [[${file.fileName}]]
+        </a>
       </div>
-      <div class="row border-top" th:if="${files == null || files.size() == 0}">
-        <div class="col d-flex justify-content-center align-items-center py-3">-</div>
+      <div class="col-2 d-flex justify-content-center align-items-center">
+        <div th:if="${file.fileType == 1}">
+          <img alt="${file.fileName}" th:src="@{|/upload/${file.saveDir}/${file.uuid}_th_${file.fileName}|}">
+        </div>
+        <div th:unless="${file.fileType == 1}">-</div>
       </div>
-      <div class="row border-top" th:each="file, status: ${files}" th:data-uuid="${file.uuid}" th:data-realsize="${file.fileSize}">
-        <div class="col-1 d-flex justify-content-center align-items-center">
-          <button type="button" class="btn btn-outline-danger invisible fileRemoveBtn">X</button>
-        </div>
-        <div class="col-1 d-flex justify-content-center align-items-center py-3" th:text="${status.count}"></div>
-        <div class="col-6 d-flex">
-          <a th:href="@{|/upload/${file.saveDir}/${file.uuid}_${file.fileName}|}"
-             th:download="${file.fileName}" class="d-flex align-items-center ps-2">
-            [[${file.fileName}]]
-          </a>
-        </div>
-        <div class="col-2 d-flex justify-content-center align-items-center">
-          <div th:if="${file.fileType == 1}">
-            <img th:src="@{|/upload/${file.saveDir}/${file.uuid}_th_${file.fileName}|}" alt="${file.fileName}">
-          </div>
-          <div th:unless="${file.fileType == 1}">-</div>
-        </div>
-        <div class="col-2 d-flex justify-content-center align-items-center uploadedFileSize">[[${file.customFileSize}]]</div>
+      <div class="col-2 d-flex justify-content-center align-items-center uploadedFileSize">[[${file.customFileSize}]]
       </div>
     </div>
+  </div>
 
   <div class="container-md w-50 mb-3 d-flex justify-content-end" th:if="${#authentication.name.equals(bvo.writer)}">
     <a th:href="@{/board/modify(bno=${bvo.bno})}">

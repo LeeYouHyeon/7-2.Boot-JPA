@@ -10,8 +10,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 public class BootJpaApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(BootJpaApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(BootJpaApplication.class, args);
+  }
 
 }
